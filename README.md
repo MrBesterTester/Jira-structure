@@ -1,16 +1,17 @@
 # Jira Structure Learning Tool
 
-A locally-hosted Jira simulator with Structure plugin functionality, designed for learning project management hierarchies and practicing AI-assisted workflows with Claude.
+A locally-hosted Jira simulator with Structure plugin functionality, designed for practicing project management with **Claude Cowork** in Claude Desktop.
 
 ---
 
 ## What Is This?
 
-This application simulates Atlassian Jira with the Structure plugin, allowing you to:
+This application simulates Atlassian Jira with the Structure plugin, purpose-built for learning how to use **Claude Cowork** to manage projects through natural language.
 
-- **Learn Jira Structure** — Understand hierarchies (Initiative → Epic → Story → Task) without needing a Jira subscription
-- **Practice with AI** — Use Claude Cowork to query, create, and manipulate issues using natural language
-- **Experiment safely** — All data is local; nothing is sent to the cloud
+**Core Purpose:**
+- Use Claude Desktop's Cowork feature to query, create, and manipulate Jira-like issues
+- Learn Jira Structure hierarchies (Initiative → Epic → Story → Task) without a Jira subscription
+- Practice AI-assisted project management in a safe, local environment
 
 ### Key Features
 
@@ -31,58 +32,81 @@ This application simulates Atlassian Jira with the Structure plugin, allowing yo
 ### Prerequisites
 
 - **Node.js 18+** — [Download here](https://nodejs.org/)
-- **Claude Desktop** or **Cursor IDE** — For AI integration (optional but recommended)
+- **Claude Desktop** — Required for Claude Cowork integration (or Cursor IDE)
 
 ### Installation
 
-1. **Download or clone** this repository
-2. **Open a terminal** in the project folder
-3. **Run the start script**:
+**Option A: Double-click to start (easiest)**
 
-   **Mac/Linux:**
+1. Unzip the `jira-structure.zip` file to any folder
+2. Double-click `START-HERE.command` (Mac) or `START-HERE.bat` (Windows)
+3. A browser window opens automatically — you're ready!
+
+**Option B: Command line**
+
+1. Unzip and open a terminal in the folder
+2. Run:
    ```bash
-   ./start.sh
+   npm install && npm start
    ```
+3. Open `http://localhost:3000` in your browser
 
-   **Windows:**
-   ```bash
-   start.bat
-   ```
-
-   **Or manually:**
-   ```bash
-   npm install
-   npm start
-   ```
-
-4. **Open your browser** to `http://localhost:3000`
-
-That's it! The app comes pre-loaded with a sample project to explore.
+The app comes pre-loaded with a sample project to explore.
 
 ---
 
-## Using with Claude Cowork
+## Sharing with Others
 
-This tool includes an MCP (Model Context Protocol) server that allows Claude to interact with your Jira data directly.
+To share this tool with a friend:
 
-### Setup for Claude Desktop
+1. **Create the package**: Run `npm run package` (creates `jira-structure.zip`)
+2. **Send the zip file** via email, Dropbox, USB drive, etc.
+3. **Recipient instructions**:
+   - Install [Node.js 18+](https://nodejs.org/) if not already installed
+   - Unzip the file
+   - Double-click the start script
+   - That's it!
 
-1. Open Claude Desktop settings
-2. Navigate to **MCP Servers**
-3. Add a new server with this configuration:
+No git, no cloning, no command line expertise needed.
 
+---
+
+## Connecting Claude Cowork
+
+This is the main event! The tool includes an MCP (Model Context Protocol) server that lets Claude interact with your Jira data through natural language.
+
+### Setup (One-Time)
+
+1. **Start the Jira Structure app** (see Quick Start above)
+2. **Open Claude Desktop** → Settings → **MCP Servers**
+3. **Add this configuration** (edit the path to match where you unzipped):
+
+   **Mac/Linux:**
    ```json
    {
      "jira-structure": {
        "command": "node",
-       "args": ["path/to/jira-structure/src/mcp/server.js"]
+       "args": ["/path/to/jira-structure/src/mcp/server.js"]
      }
    }
    ```
 
-4. Restart Claude Desktop
+   **Windows:**
+   ```json
+   {
+     "jira-structure": {
+       "command": "node",
+       "args": ["C:\\path\\to\\jira-structure\\src\\mcp\\server.js"]
+     }
+   }
+   ```
 
-### Setup for Cursor IDE
+4. **Restart Claude Desktop**
+5. Look for the Jira Structure tools in Claude's tool list — you're connected!
+
+### For Cursor IDE Users
+
+(If you prefer Cursor over Claude Desktop)
 
 1. Open Cursor settings (Cmd/Ctrl + ,)
 2. Search for "MCP"
