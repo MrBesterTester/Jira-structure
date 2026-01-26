@@ -11,7 +11,7 @@
 
 | Phase | Description | Status | Progress |
 |-------|-------------|--------|----------|
-| 1 | Project Setup & Core Data Layer | In Progress | 2/4 |
+| 1 | Project Setup & Core Data Layer | In Progress | 3/4 |
 | 2 | State Management & Basic UI Shell | Not Started | 0/3 |
 | 3 | Tree View Implementation | Not Started | 0/3 |
 | 4 | Kanban Board Implementation | Not Started | 0/3 |
@@ -19,7 +19,7 @@
 | 6 | Bulk Operations, Import/Export & Polish | Not Started | 0/4 |
 | 7 | MCP Integration (Future) | Not Started | 0/1 |
 
-**Total Progress: 2/22 steps completed**
+**Total Progress: 3/22 steps completed**
 
 ---
 
@@ -45,13 +45,13 @@
 - [x] **TEST**: TypeScript compiles with no errors
 
 ### Step 1.3: Create Data Storage Layer
-- [ ] Create src/server/index.ts with Express server
-- [ ] Implement GET/PUT endpoints for all JSON files
-- [ ] Create /data directory structure
-- [ ] Create initial empty JSON files
-- [ ] Add CORS support for development
-- [ ] Create src/services/api.ts with typed fetch functions
-- [ ] **TEST**: Can read/write JSON via API, data persists
+- [x] Create src/server/index.ts with Express server
+- [x] Implement GET/PUT endpoints for all JSON files
+- [x] Create /data directory structure
+- [x] Create initial empty JSON files
+- [x] Add CORS support for development
+- [x] Create src/services/api.ts with typed fetch functions
+- [x] **TEST**: Can read/write JSON via API, data persists
 
 ### Step 1.4: Create Sample Data
 - [ ] Create projects.json with Phoenix Platform project
