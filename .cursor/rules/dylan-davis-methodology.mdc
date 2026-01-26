@@ -1,0 +1,242 @@
+---
+description: Dylan Davis's three-document system for AI-powered app development
+alwaysApply: true
+---
+
+# Dylan Davis Three-Document Development Methodology
+
+This project follows Dylan Davis's proven methodology for building apps with AI, tested across 50+ applications.
+
+> **Full Documentation**: For the complete detailed guide with examples, see [`docs/Dylan-Davis-50plus-method.html`](../../docs/Dylan-Davis-50plus-method.html)
+
+## Core Principle: Three Documents
+
+All development is guided by three foundational documents that work together as an extended memory system:
+
+1. **Specification (WHAT)**: Defines what we're building - the single source of truth. Created through AI-led interview.
+2. **Blueprint (HOW)**: Detailed architecture broken into iterative, testable phases with embedded prompts ready to copy/paste.
+3. **To-Dos (WHEN)**: Roadmap with checkboxes tracking progress and extending AI memory across conversations.
+
+**Why This Structure?**
+- Spec is the foundation—all other documents grow from it
+- Blueprint breaks complexity into manageable chunks
+- To-Dos solves AI's memory problem as conversations grow
+- Together, they create a self-reinforcing system that keeps AI on track
+
+## Document Creation Process
+
+### 1. Specification Document
+
+**Purpose**: The seed of everything else. Created through structured AI-led interview.
+
+**Process**:
+- Use ChatGPT in **Auto Mode** (not Thinking Mode initially)
+- Provide interview prompt that requests **one question at a time** (critical—not multiple questions simultaneously)
+- Interview should cover: features, user flows, data requirements, integrations
+- Go back and forth approximately **15-20 times** (takes 10-15 minutes)
+- **Optimization**: Use Auto Mode for interview, then switch to Thinking Mode at end to finalize with completion prompt
+- Include app idea description below prompt (use voice/dictation for richer context)
+
+**Key Requirements of Interview Prompt**:
+- Request one question at a time (not multiple questions simultaneously)
+- State goal: Create step-by-step specification that can be passed to a developer
+- Cover all aspects: features, user flows, data requirements, integrations
+
+**Critical Philosophy**: Keep It Simple
+- AI will try to make your app overly ambitious ("enterprise-ready" with many features)
+- **Solution**: Keep saying "no" to extra features
+- Focus on very basic version that solves your specific problem
+- Want: simple minimal product (MVP), only features that directly solve problem, no extra complexity
+
+**Practical Tips**:
+- Use dictation: Speak to AI instead of typing for richer context
+- Answer confidently: If you don't know, ask AI for choices or have AI answer based on constraints
+- Tool: ChatGPT specifically in Auto Mode (not thinking mode initially)
+- Timing: Auto mode takes 10-15 minutes for full interview
+
+### 2. Blueprint Document
+
+**Purpose**: The "how" of building the product. Detailed architecture for construction.
+
+**Model**: Requires high-end AI model with extended reasoning and long output window
+- **Recommended**: Claude Opus 4.5 (longest output, most detailed blueprints after A/B testing)
+- Alternatives: GPT-5.2 Thinking, Gemini 3 Pro
+
+**Process**:
+- Copy blueprint prompt (from Harper's blog or video description)
+- Paste specification below the prompt
+- Submit and wait for detailed blueprint (usually 10-20 minutes)
+- Blueprint should include embedded prompts ready to copy/paste
+
+**Blueprint Prompt Structure**:
+- Draft detailed, step-by-step blueprint
+- Break into iterative chunks
+- Emphasize each piece should be small enough for AI to implement and test safely
+- **Generate embedded prompts** that can be copied and pasted to generate code
+- Use **real data and real API calls** for testing (not mock data)
+
+**Blueprint Structure**:
+- **Phases**: Major project sections
+- **Steps**: Individual implementation tasks within each phase
+- **Embedded Prompts**: Ready-to-use AI instructions for each step
+- **Testing Instructions**: How to validate each piece
+
+**What You Get**:
+- Detailed architecture written in phases and steps
+- Series of prompts you can copy and paste to generate code
+- True "prompt engineering via documentation"
+
+### 3. To-Dos Document
+
+**Purpose**: Acts like roadmap and solves critical problem: AI memory decay.
+
+**The AI Memory Problem**:
+- As AI works over many messages, memory fades
+- AI forgets what it did, what comes next, can "go off the rails"
+- **Solution**: To-Dos document grounds AI in macro picture, brings it back to plan
+
+**Creation Process** (surprisingly simple):
+- Copy single one-liner prompt: "Turn the above blueprint into a detailed to-do list"
+- Paste at bottom of blueprint in Claude
+- AI converts blueprint into detailed checklist
+
+**Format**:
+- Phase information (which major section)
+- Step information (which sub-task)
+- Checkbox format (markdown: `- [ ]`)
+- Creates file that AI can update as it works
+
+**Memory Refresh Workflow**:
+- After AI completes step, start new conversation (avoid context overflow)
+- New conversation starts with fresh context window
+- AI references To-Dos document
+- AI checks which boxes already marked complete
+- AI sees what's next and continues seamlessly
+- As it works, it checks off boxes
+
+## Development Workflow
+
+### Phase-Based Development
+- Work in phases from blueprint, not individual prompts
+- Each phase should be small enough to implement and test safely
+- **Recent capability**: Can now pass entire phases at once (25-45 minutes) with proper blueprint structure
+- Include Spec + Blueprint + To-Dos + rules file in every new conversation
+- Update To-Dos checkboxes as work progresses
+
+### Code Generation Process
+1. Open Cursor
+2. Create agents.mmd file with basic project rules (this file)
+3. Copy phase prompt from blueprint
+4. In CodeEx chat, paste: spec + blueprint + to-dos + agents.mmd + phase prompt
+5. Let CodeEx work (25-45 minutes)
+6. Review code and test
+7. If errors: fix → update agents.mmd → next phase
+8. Repeat until complete
+
+### Keep It Simple (MVP First)
+- **CRITICAL**: Resist AI's tendency to add unnecessary features
+- AI wants to create "enterprise-ready" application with many features
+- Focus on minimal version that solves core problem
+- Say "no" to extra features that add complexity
+- Build MVP first, add features later if needed
+
+### Testing Requirements
+- **Testing is probably the most important thing for any AI** to ensure it avoids and mitigates errors
+- **Always test after each phase**
+- Workflow: AI writes code → AI runs tests → If errors, AI self-corrects before you ask → Fewer errors surface to you
+- Use **real data and real API calls** in tests, **never mock data**
+- Mock data causes tests to pass but app doesn't work in reality
+- Tests should validate that app actually works, not just that code compiles
+- If tests pass but app doesn't work, the tests are insufficient
+
+### Error Handling Workflow
+1. Error occurs → AI runs tests and finds problem
+2. Persist → Ask AI to fix it (don't give up - errors are inevitable)
+3. AI self-corrects → Usually fixes the issue
+4. Extract lesson → What did we learn?
+5. **Embed for future** → Update this rules file with lesson (brief, information-dense)
+
+**Nature of AI Errors**:
+- Most errors stem from AI knowledge cutoff dates
+- AI trained and then frozen - anything after cutoff is unknown
+- New APIs, new model versions, recent features - AI doesn't know about them
+- **Your job**: Provide current documentation to AI when using new versions
+
+**Example Error Resolution**:
+- Scenario: Want to use Gemini 3 Flash (new model)
+- Problem: AI trained on Gemini 2.5 Flash, doesn't know 3 Flash exists
+- Result: AI codes against old version, causing errors
+- Solution: Provide Gemini 3 Flash documentation and explicitly instruct to use only this version
+
+### Knowledge Management
+- When fixing errors, immediately update this rules file with lesson learned
+- Keep entries **brief and information-dense** - every conversation includes this file
+- Write so future AIs understand immediately and never repeat the mistake
+- Balance file size: too large consumes token budget, too sparse misses critical info
+- Over time, incrementally add lessons - keep entries brief because every AI conversation includes this file
+
+**Updating agents.mmd Example**:
+After fixing error, say: "We just figured out how to fix this issue. I need you to update the agents.mmd file with the lesson we just learned. Make sure this is written briefly and very information dense. I want to make sure that all future AIs never make the same mistake again."
+
+## Model Selection Guidelines
+
+**By Phase**:
+- **Specification**: ChatGPT (Auto Mode) for interview, then Thinking Mode for finalization
+- **Blueprint**: Claude Opus 4.5 (longest output, most detailed blueprints - recommended after A/B testing)
+- **Code Generation**: CodeEx (GPT-5.2) - can handle entire phases, often gets it right first time
+- **Frontend/UI**: Claude Opus 4.5 (excellent aesthetic taste, great for beautiful interfaces)
+- **Debugging/Testing**: Gemini 3 Pro (can interact with UI directly, great for end-to-end testing, good at clicking buttons and collecting error data)
+
+**Model Capabilities Evolution**:
+- 4 months ago: Had to work prompt-by-prompt
+- Now: Can pass entire phases at once (25-45 minutes)
+- CodeEx consistently gets it right first time with proper blueprints
+- This represents major leap in capability
+
+**Important**: Models change frequently. Always A/B test new models as they're released.
+
+## Common Mistakes to Avoid
+
+1. **Not Keeping It Simple**: Letting AI talk you into enterprise-grade complexity. Start with absolute MVP.
+2. **Skipping Real Data Testing**: Using mock data means tests pass but real functionality fails. Always use real data and real API calls.
+3. **Giving Up on Errors**: Errors are inevitable. Your job is to persist and have AI fix them, not abandon project.
+4. **Not Updating agents.mmd**: If you don't embed lessons learned, future AIs will make same mistakes repeatedly.
+5. **Asking Multiple Questions at Once**: In specification interview, always require AI to ask one question at a time, not batches.
+6. **Using Wrong Models**: Each phase requires appropriate models. ChatGPT for spec, Claude for blueprint, CodeEx for build, Gemini for debugging.
+
+## Key Success Factors
+
+1. **Process > Tools**: The methodology matters more than specific tools
+2. **Persistence**: Errors will happen - persistence through them is key
+3. **Documentation**: Always provide current API/docs when using new versions (AI has knowledge cutoff)
+4. **Iterative**: Build in small, testable chunks
+5. **Memory Extension**: Use To-Dos to ground AI in macro picture across conversations
+6. **Keep It Simple**: Start with MVP, add features later if needed
+7. **Embed Lessons**: Every error fixed should prevent future instances
+
+## When Starting New Conversations
+
+**Always include these documents**:
+- Specification document
+- Blueprint document  
+- To-Dos document (with current checkbox status)
+- This rules file (agents.mmd or .cursor/rules)
+
+**For Large Chunks**:
+- Copy entire Phase from blueprint
+- Include Spec, Blueprint, and To-Dos in context
+- Include agents.mmd rules file
+- Paste into CodeEx with phase prompt
+- Wait 25-45 minutes for completion
+- CodeEx often gets it right first time
+
+This creates extended memory system that keeps AI on track and aware of progress.
+
+## System Scale
+
+This system has been tested and refined over 50+ app builds:
+- 50+ applications built using this exact methodology
+- Consistent, repeatable results across different types of apps
+- Works for non-technical founders wanting to build
+- Extensible to different complexity levels
+- Continuously improving as AI models improve
