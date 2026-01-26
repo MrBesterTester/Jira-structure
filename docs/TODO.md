@@ -230,18 +230,26 @@
 - [ ] **TEST**: Filters work correctly, can combine multiple filters
 
 ### Step 6.4: Final Polish & Build Setup
-- [ ] Update package.json scripts (dev, build, start, preview)
+- [ ] Update package.json scripts (dev, build, start, preview, package)
 - [ ] Create production Express server configuration
 - [ ] Add loading spinners and skeletons
 - [ ] Add error boundaries
 - [ ] Add toast notifications
 - [ ] Create keyboard shortcuts help modal
 - [ ] Add empty states with helpful messages
-- [ ] Create start.sh for Mac/Linux
-- [ ] Create start.bat for Windows
-- [ ] Write comprehensive README.md
-- [ ] Test full build and distribution
-- [ ] **TEST**: App builds successfully, runs from built files
+- [ ] Create START-HERE.command for Mac (double-click to run)
+- [ ] Create START-HERE.bat for Windows (double-click to run)
+- [ ] Create `npm run package` script that:
+  - [ ] Builds the app
+  - [ ] Creates jira-structure.zip with all needed files
+  - [ ] Includes START-HERE scripts, data folder, server, README
+  - [ ] Excludes node_modules, .git, docs/, dev files
+- [ ] Write comprehensive README.md (user-facing)
+- [ ] Test full build and distribution:
+  - [ ] Unzip to fresh folder
+  - [ ] Double-click START-HERE works
+  - [ ] All features work from built files
+- [ ] **TEST**: App builds, packages, and runs from zip with minimal setup
 
 ---
 
