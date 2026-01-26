@@ -729,22 +729,24 @@ Create comprehensive filtering UI:
 
 ### Step 6.4: Final Polish & Build Setup
 
-**Test**: App builds successfully. Runs from built files. Package is ready for distribution.
+**Test**: App builds successfully. Runs from built files. Package is ready for seamless distribution.
 
 ```
 PROMPT:
-Final polish and build configuration:
+Final polish, build configuration, and distribution packaging:
 
 1. Update package.json scripts:
    - "dev": runs both React dev server and Express API
    - "build": builds React app for production
    - "start": serves built app + API (for distribution)
    - "preview": test production build locally
+   - "package": creates distributable zip file
 
 2. Create production Express server:
    - Serves built React files from /dist
    - API endpoints for JSON data
    - Single entry point
+   - Auto-opens browser on start
 
 3. UI Polish:
    - Loading spinners/skeletons where appropriate
@@ -753,24 +755,30 @@ Final polish and build configuration:
    - Keyboard shortcuts help modal
    - Empty states with helpful messages
 
-4. Create start scripts:
-   - start.sh (Mac/Linux)
-   - start.bat (Windows)
-   - Both: check Node.js, install deps if needed, run app
+4. Create double-click start scripts:
+   - START-HERE.command (Mac) - double-click to run, auto-opens browser
+   - START-HERE.bat (Windows) - double-click to run, auto-opens browser
+   - Both: check Node.js, install deps if needed, start server, open browser
 
-5. Update README.md with:
-   - Project description
-   - Prerequisites (Node.js 18+)
-   - Quick start instructions
-   - Available features
-   - Keyboard shortcuts
-   - Troubleshooting
+5. Create packaging script (npm run package):
+   - Builds the production app
+   - Creates jira-structure.zip containing:
+     - Built app files (dist/)
+     - Server files (src/server/, src/mcp/)
+     - Data folder with sample data
+     - START-HERE scripts
+     - README.md
+     - package.json and package-lock.json
+   - Excludes: node_modules, .git, docs/, source files, dev configs
+   - Zip should be self-contained: unzip → double-click → running
 
-6. Test full build and distribution:
-   - Build the app
-   - Copy to fresh directory
-   - Run start script
-   - Verify all features work
+6. Test full distribution workflow:
+   - Run npm run package
+   - Copy zip to fresh location
+   - Unzip
+   - Double-click START-HERE
+   - Verify: browser opens, app works, MCP connects
+   - Test on both Mac and Windows if possible
 ```
 
 ---
