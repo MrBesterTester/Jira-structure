@@ -11,7 +11,7 @@
 
 | Phase | Description | Status | Progress |
 |-------|-------------|--------|----------|
-| 1 | Project Setup & Core Data Layer | In Progress | 1/4 |
+| 1 | Project Setup & Core Data Layer | In Progress | 2/4 |
 | 2 | State Management & Basic UI Shell | Not Started | 0/3 |
 | 3 | Tree View Implementation | Not Started | 0/3 |
 | 4 | Kanban Board Implementation | Not Started | 0/3 |
@@ -19,7 +19,7 @@
 | 6 | Bulk Operations, Import/Export & Polish | Not Started | 0/4 |
 | 7 | MCP Integration (Future) | Not Started | 0/1 |
 
-**Total Progress: 1/22 steps completed**
+**Total Progress: 2/22 steps completed**
 
 ---
 
@@ -33,16 +33,16 @@
 - [x] **TEST**: Default Vite page displays correctly
 
 ### Step 1.2: Define Core TypeScript Types
-- [ ] Create src/types/index.ts
-- [ ] Define IssueType enum (Initiative, Epic, Feature, Story, Task, Bug, Subtask)
-- [ ] Define IssueStatus enum (Todo, InProgress, InReview, Done)
-- [ ] Define Priority enum (Highest, High, Medium, Low, Lowest)
-- [ ] Define Issue interface with all fields
-- [ ] Define Project interface
-- [ ] Define Sprint interface
-- [ ] Define User interface
-- [ ] Define Structure interface
-- [ ] **TEST**: TypeScript compiles with no errors
+- [x] Create src/types/index.ts
+- [x] Define IssueType enum (Initiative, Epic, Feature, Story, Task, Bug, Subtask)
+- [x] Define IssueStatus enum (Todo, InProgress, InReview, Done)
+- [x] Define Priority enum (Highest, High, Medium, Low, Lowest)
+- [x] Define Issue interface with all fields
+- [x] Define Project interface
+- [x] Define Sprint interface
+- [x] Define User interface
+- [x] Define Structure interface
+- [x] **TEST**: TypeScript compiles with no errors
 
 ### Step 1.3: Create Data Storage Layer
 - [ ] Create src/server/index.ts with Express server
