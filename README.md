@@ -273,6 +273,48 @@ Your data stays on your machine, making this safe for practicing with sensitive 
 
 ---
 
+## For Developers: Continuing This Project
+
+This project uses the **Dylan Davis Three-Document System** for AI-assisted development. When continuing work in a new chat session (with Claude, Cursor, or similar), provide these files at the start:
+
+### Starting a New Session
+
+Include these documents using `@` references:
+
+```
+@docs/SPECIFICATION.md
+@docs/BLUEPRINT.md
+@docs/TODO.md
+```
+
+Then specify which phase/step to work on:
+
+```
+Continue with Phase 1, Step 1.1: Initialize React + TypeScript + Vite Project
+```
+
+### Why This Works
+
+| Document | Purpose |
+|----------|---------|
+| `SPECIFICATION.md` | Reminds AI what we're building (the "what") |
+| `BLUEPRINT.md` | Contains exact prompts to execute (the "how") |
+| `TODO.md` | Shows progress with checkboxes (the "where we left off") |
+
+The Cursor rule (`.cursor/rules/dylan-davis-methodology.mdc`) automatically applies and tells the AI how to follow the methodology.
+
+### After Completing Work
+
+1. Check off completed items in `TODO.md`
+2. Commit changes to git
+3. If errors were fixed, add lessons learned to the Cursor rule or `TODO.md` notes section
+
+### Full Methodology Reference
+
+See `docs/Dylan-Davis-50plus-method.html` for the complete methodology guide.
+
+---
+
 ## Contributing
 
 This is a learning tool. If you find bugs or have suggestions:
