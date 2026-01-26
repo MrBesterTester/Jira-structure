@@ -1,1 +1,47 @@
-[]
+[
+  {
+    "id": "sprint-1",
+    "name": "Sprint 1",
+    "projectId": "project-1",
+    "startDate": "2025-12-02T00:00:00.000Z",
+    "endDate": "2025-12-15T23:59:59.000Z",
+    "status": "completed",
+    "goalDescription": "Set up project foundation and implement user registration flow"
+  },
+  {
+    "id": "sprint-2",
+    "name": "Sprint 2",
+    "projectId": "project-1",
+    "startDate": "2025-12-16T00:00:00.000Z",
+    "endDate": "2025-12-29T23:59:59.000Z",
+    "status": "completed",
+    "goalDescription": "Complete authentication system and begin role-based access control"
+  },
+  {
+    "id": "sprint-3",
+    "name": "Sprint 3",
+    "projectId": "project-1",
+    "startDate": "2025-12-30T00:00:00.000Z",
+    "endDate": "2026-01-12T23:59:59.000Z",
+    "status": "completed",
+    "goalDescription": "Finalize RBAC and start dashboard implementation"
+  },
+  {
+    "id": "sprint-4",
+    "name": "Sprint 4",
+    "projectId": "project-1",
+    "startDate": "2026-01-13T00:00:00.000Z",
+    "endDate": "2026-01-26T23:59:59.000Z",
+    "status": "active",
+    "goalDescription": "Complete dashboard core features and implement widget system"
+  },
+  {
+    "id": "sprint-5",
+    "name": "Sprint 5",
+    "projectId": "project-1",
+    "startDate": "2026-01-27T00:00:00.000Z",
+    "endDate": "2026-02-09T23:59:59.000Z",
+    "status": "planned",
+    "goalDescription": "Analytics & reporting features and notification system"
+  }
+]

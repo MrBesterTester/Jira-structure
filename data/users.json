@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "id": "user-1",
+    "displayName": "Alex Chen",
+    "email": "alex.chen@phoenix.dev",
+    "avatarUrl": "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"
+  },
+  {
+    "id": "user-2",
+    "displayName": "Sarah Kim",
+    "email": "sarah.kim@phoenix.dev",
+    "avatarUrl": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
+  },
+  {
+    "id": "user-3",
+    "displayName": "Marcus Johnson",
+    "email": "marcus.johnson@phoenix.dev",
+    "avatarUrl": "https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus"
+  },
+  {
+    "id": "user-4",
+    "displayName": "Emma Rodriguez",
+    "email": "emma.rodriguez@phoenix.dev",
+    "avatarUrl": "https://api.dicebear.com/7.x/avataaars/svg?seed=Emma"
+  },
+  {
+    "id": "user-5",
+    "displayName": "David Park",
+    "email": "david.park@phoenix.dev",
+    "avatarUrl": "https://api.dicebear.com/7.x/avataaars/svg?seed=David"
+  }
+]

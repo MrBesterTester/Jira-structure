@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": "project-1",
+    "key": "PHOENIX",
+    "name": "Phoenix Platform",
+    "description": "A modern cloud-based development platform featuring user authentication, role-based access control, real-time dashboards, and comprehensive analytics. The platform is designed to be scalable, secure, and developer-friendly.",
+    "lead": "user-1",
+    "createdAt": "2025-11-15T09:00:00.000Z"
+  }
+]

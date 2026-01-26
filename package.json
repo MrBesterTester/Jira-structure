@@ -10,7 +10,8 @@
     "build": "tsc -b && vite build",
     "start": "tsx src/server/index.ts",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "validate-data": "tsx scripts/validate-data.ts"
   },
   "dependencies": {
     "cors": "^2.8.6",

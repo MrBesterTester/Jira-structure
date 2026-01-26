@@ -144,20 +144,96 @@ Once connected, try these natural language commands:
 
 ## Sample Data
 
-The app includes a realistic sample project called **"Phoenix Platform"** with:
+The app includes a realistic sample project called **"Phoenix Platform"** — a cloud-based development platform with authentication, dashboards, and analytics.
 
-- **2 Initiatives** — High-level product goals
-- **6 Epics** — Major feature areas
-- **15+ Stories** — User-facing functionality
-- **20+ Tasks** — Implementation work
-- **8 Bugs** — Various priorities and statuses
-- **5 Sprints** — Including completed, active, and planned
+### Project (1)
 
-This gives you real scenarios to practice with, including:
-- Multi-level hierarchies
-- Blocking relationships
-- Cross-epic dependencies
-- Various workflow states
+| Key | Name | Description |
+|-----|------|-------------|
+| PHOENIX | Phoenix Platform | A modern cloud-based development platform featuring user authentication, role-based access control, real-time dashboards, and comprehensive analytics. |
+
+### Team Members (5)
+
+| Name | Role | Email |
+|------|------|-------|
+| Alex Chen | Project Lead | alex.chen@phoenix.dev |
+| Sarah Kim | Senior Developer | sarah.kim@phoenix.dev |
+| Marcus Johnson | Frontend Developer | marcus.johnson@phoenix.dev |
+| Emma Rodriguez | Backend Developer | emma.rodriguez@phoenix.dev |
+| David Park | QA Engineer | david.park@phoenix.dev |
+
+### Sprints (5)
+
+| Sprint | Status | Goal |
+|--------|--------|------|
+| Sprint 1 | ✅ Completed | Set up project foundation and implement user registration flow |
+| Sprint 2 | ✅ Completed | Complete authentication system and begin role-based access control |
+| Sprint 3 | ✅ Completed | Finalize RBAC and start dashboard implementation |
+| Sprint 4 | 🔄 Active | Complete dashboard core features and implement widget system |
+| Sprint 5 | 📅 Planned | Analytics & reporting features and notification system |
+
+### Issues (53 total)
+
+#### Initiatives (2)
+
+| Key | Title | Status |
+|-----|-------|--------|
+| PHOENIX-1 | User Authentication & Authorization Platform | In Progress |
+| PHOENIX-2 | Dashboard & Analytics Platform | In Progress |
+
+#### Epics (6)
+
+| Key | Title | Parent | Status |
+|-----|-------|--------|--------|
+| PHOENIX-3 | User Registration & Onboarding | PHOENIX-1 | Done |
+| PHOENIX-4 | Authentication System | PHOENIX-1 | In Progress |
+| PHOENIX-5 | Role-Based Access Control | PHOENIX-1 | In Progress |
+| PHOENIX-6 | Main Dashboard | PHOENIX-2 | In Progress |
+| PHOENIX-7 | Analytics & Reporting | PHOENIX-2 | To Do |
+| PHOENIX-8 | Notification System | PHOENIX-2 | To Do |
+
+#### Stories (15)
+
+| Key | Title | Epic | Points | Status |
+|-----|-------|------|--------|--------|
+| PHOENIX-9 | Implement email registration flow | Registration | 8 | Done |
+| PHOENIX-10 | Implement OAuth provider integration | Registration | 13 | Done |
+| PHOENIX-11 | Implement JWT authentication | Auth System | 8 | Done |
+| PHOENIX-12 | Implement session management | Auth System | 5 | In Progress |
+| PHOENIX-16 | Create dashboard layout | Dashboard | 5 | In Progress |
+| PHOENIX-21 | Implement real-time notifications | Notifications | 8 | To Do |
+
+#### Tasks & Subtasks (22)
+
+| Key | Title | Parent | Status |
+|-----|-------|--------|--------|
+| PHOENIX-24 | Create registration form component | PHOENIX-9 | Done |
+| PHOENIX-25 | Set up email verification service | PHOENIX-9 | Done |
+| PHOENIX-26 | Configure Google OAuth | PHOENIX-10 | Done |
+| PHOENIX-28 | Create JWT token service | PHOENIX-11 | Done |
+| PHOENIX-30 | Create session store | PHOENIX-12 | In Progress |
+| PHOENIX-37 | Design responsive grid system | PHOENIX-16 | In Progress |
+
+#### Bugs (8)
+
+| Key | Title | Priority | Status |
+|-----|-------|----------|--------|
+| PHOENIX-44 | Registration fails with special characters in email | High | Done |
+| PHOENIX-45 | Token refresh endpoint returns 500 error | Highest | In Progress |
+| PHOENIX-46 | Session not persisting after browser restart | High | To Do |
+| PHOENIX-47 | Dashboard not responsive on tablet devices | Medium | In Progress |
+| PHOENIX-48 | Charts not rendering with large datasets | Medium | To Do |
+
+### Relationships
+
+The sample data includes realistic relationships:
+
+- **Parent-Child**: Full hierarchy from Initiatives → Epics → Stories → Tasks → Subtasks
+- **Blockers**: 
+  - PHOENIX-3 (Registration) blocks PHOENIX-4 (Auth System)
+  - PHOENIX-4 (Auth System) blocks PHOENIX-5 (RBAC)
+  - PHOENIX-6 (Dashboard) blocks PHOENIX-7 (Analytics)
+- **Related Issues**: OAuth tasks (PHOENIX-26, PHOENIX-27) are related to each other
 
 ### Starting Fresh
 

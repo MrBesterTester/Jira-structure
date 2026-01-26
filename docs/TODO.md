@@ -11,7 +11,7 @@
 
 | Phase | Description | Status | Progress |
 |-------|-------------|--------|----------|
-| 1 | Project Setup & Core Data Layer | In Progress | 3/4 |
+| 1 | Project Setup & Core Data Layer | Complete | 4/4 |
 | 2 | State Management & Basic UI Shell | Not Started | 0/3 |
 | 3 | Tree View Implementation | Not Started | 0/3 |
 | 4 | Kanban Board Implementation | Not Started | 0/3 |
@@ -19,7 +19,7 @@
 | 6 | Bulk Operations, Import/Export & Polish | Not Started | 0/4 |
 | 7 | MCP Integration (Future) | Not Started | 0/1 |
 
-**Total Progress: 3/22 steps completed**
+**Total Progress: 4/22 steps completed**
 
 ---
 
@@ -54,18 +54,18 @@
 - [x] **TEST**: Can read/write JSON via API, data persists
 
 ### Step 1.4: Create Sample Data
-- [ ] Create projects.json with Phoenix Platform project
-- [ ] Create users.json with 5 team members
-- [ ] Create sprints.json with 5 sprints (3 completed, 1 active, 1 planned)
-- [ ] Create issues.json with full hierarchy:
-  - [ ] 2 Initiatives
-  - [ ] 6 Epics
-  - [ ] 15 Stories
-  - [ ] 20 Tasks/Subtasks
-  - [ ] 8 Bugs
-- [ ] Create structures.json with default structure
-- [ ] Verify all relationships are valid (parentId/childIds match)
-- [ ] **TEST**: Sample data loads correctly
+- [x] Create projects.json with Phoenix Platform project
+- [x] Create users.json with 5 team members
+- [x] Create sprints.json with 5 sprints (3 completed, 1 active, 1 planned)
+- [x] Create issues.json with full hierarchy:
+  - [x] 2 Initiatives
+  - [x] 6 Epics
+  - [x] 15 Stories
+  - [x] 22 Tasks/Subtasks
+  - [x] 8 Bugs
+- [x] Create structures.json with default structure
+- [x] Verify all relationships are valid (parentId/childIds match)
+- [x] **TEST**: Sample data loads correctly
 
 ---
 
