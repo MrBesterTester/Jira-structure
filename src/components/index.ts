@@ -9,3 +9,6 @@ export * from './Layout';
 
 // Issue components
 export * from './Issue';
+
+// Tree view components
+export * from './Tree';
