@@ -146,6 +146,8 @@ Once connected, try these natural language commands:
 
 The app includes a realistic sample project called **"Phoenix Platform"** — a cloud-based development platform with authentication, dashboards, and analytics.
 
+> **Note on Issue Keys:** In Jira, all issues within a project share the same key prefix (e.g., `PHOENIX-1`, `PHOENIX-2`). The issue type (Initiative, Epic, Story, Bug, etc.) is stored as a separate field, not embedded in the key. This is a Jira platform limitation — you identify issue types by looking at the Type field or icon, not the key itself.
+
 ### Project (1)
 
 | Key | Name | Description |
