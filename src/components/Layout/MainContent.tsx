@@ -7,7 +7,8 @@
 
 import { ReactNode } from 'react';
 import { useUIStore, useIssueStore } from '../../store';
-import { IssueType, IssueStatus } from '../../types';
+import { IssueStatus, Issue } from '../../types';
+import { IssueCard } from '../Issue';
 
 interface MainContentProps {
   children?: ReactNode;
@@ -15,11 +16,20 @@ interface MainContentProps {
 
 export function MainContent({ children }: MainContentProps) {
   const currentView = useUIStore(state => state.currentView);
-  const issues = useIssueStore(state => state.issues);
   const getRootIssues = useIssueStore(state => state.getRootIssues);
   const getIssuesByStatus = useIssueStore(state => state.getIssuesByStatus);
+  const openDetailPanel = useUIStore(state => state.openDetailPanel);
+  const toggleIssueSelection = useUIStore(state => state.toggleIssueSelection);
   
   const rootIssues = getRootIssues();
+
+  const handleIssueClick = (issue: Issue) => {
+    toggleIssueSelection(issue.id);
+  };
+
+  const handleIssueDoubleClick = (issue: Issue) => {
+    openDetailPanel(issue.id);
+  };
 
   // If children are provided, render them instead of placeholder
   if (children) {
@@ -33,9 +43,17 @@ export function MainContent({ children }: MainContentProps) {
   return (
     <main className="flex-1 overflow-auto bg-gray-50">
       {currentView === 'tree' ? (
-        <TreeViewPlaceholder rootIssues={rootIssues} />
+        <TreeViewPlaceholder 
+          rootIssues={rootIssues} 
+          onIssueClick={handleIssueClick}
+          onIssueDoubleClick={handleIssueDoubleClick}
+        />
       ) : (
-        <KanbanViewPlaceholder getIssuesByStatus={getIssuesByStatus} />
+        <KanbanViewPlaceholder 
+          getIssuesByStatus={getIssuesByStatus}
+          onIssueClick={handleIssueClick}
+          onIssueDoubleClick={handleIssueDoubleClick}
+        />
       )}
     </main>
   );
@@ -43,10 +61,12 @@ export function MainContent({ children }: MainContentProps) {
 
 // Placeholder Tree View
 interface TreeViewPlaceholderProps {
-  rootIssues: ReturnType<ReturnType<typeof useIssueStore>['getRootIssues']>;
+  rootIssues: Issue[];
+  onIssueClick: (issue: Issue) => void;
+  onIssueDoubleClick: (issue: Issue) => void;
 }
 
-function TreeViewPlaceholder({ rootIssues }: TreeViewPlaceholderProps) {
+function TreeViewPlaceholder({ rootIssues, onIssueClick, onIssueDoubleClick }: TreeViewPlaceholderProps) {
   return (
     <div className="p-4">
       {/* Toolbar placeholder */}
@@ -72,7 +92,7 @@ function TreeViewPlaceholder({ rootIssues }: TreeViewPlaceholderProps) {
         </div>
       </div>
 
-      {/* Tree items placeholder */}
+      {/* Tree items using IssueCard component */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         {rootIssues.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
@@ -85,7 +105,13 @@ function TreeViewPlaceholder({ rootIssues }: TreeViewPlaceholderProps) {
         ) : (
           <div className="divide-y divide-gray-100">
             {rootIssues.slice(0, 15).map((issue) => (
-              <TreeItemPlaceholder key={issue.id} issue={issue} depth={0} />
+              <TreeItemRow 
+                key={issue.id} 
+                issue={issue} 
+                depth={0}
+                onIssueClick={onIssueClick}
+                onIssueDoubleClick={onIssueDoubleClick}
+              />
             ))}
             {rootIssues.length > 15 && (
               <div className="p-3 text-sm text-gray-500 text-center bg-gray-50">
@@ -106,46 +132,24 @@ function TreeViewPlaceholder({ rootIssues }: TreeViewPlaceholderProps) {
   );
 }
 
-// Tree item placeholder
-interface TreeItemPlaceholderProps {
-  issue: {
-    id: string;
-    key: string;
-    title: string;
-    type: IssueType;
-    status: IssueStatus;
-    childIds: string[];
-  };
+// Tree item row wrapper for indentation
+interface TreeItemRowProps {
+  issue: Issue;
   depth: number;
+  onIssueClick: (issue: Issue) => void;
+  onIssueDoubleClick: (issue: Issue) => void;
 }
 
-function TreeItemPlaceholder({ issue, depth }: TreeItemPlaceholderProps) {
+function TreeItemRow({ issue, depth, onIssueClick, onIssueDoubleClick }: TreeItemRowProps) {
   const hasChildren = issue.childIds.length > 0;
   
-  const typeColors: Record<IssueType, string> = {
-    [IssueType.Initiative]: 'bg-purple-100 text-purple-700',
-    [IssueType.Epic]: 'bg-blue-100 text-blue-700',
-    [IssueType.Feature]: 'bg-cyan-100 text-cyan-700',
-    [IssueType.Story]: 'bg-green-100 text-green-700',
-    [IssueType.Task]: 'bg-gray-100 text-gray-700',
-    [IssueType.Bug]: 'bg-red-100 text-red-700',
-    [IssueType.Subtask]: 'bg-gray-100 text-gray-600',
-  };
-
-  const statusColors: Record<IssueStatus, string> = {
-    [IssueStatus.Todo]: 'bg-gray-100 text-gray-600',
-    [IssueStatus.InProgress]: 'bg-blue-100 text-blue-700',
-    [IssueStatus.InReview]: 'bg-yellow-100 text-yellow-700',
-    [IssueStatus.Done]: 'bg-green-100 text-green-700',
-  };
-
   return (
     <div 
-      className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 cursor-pointer transition-colors"
-      style={{ paddingLeft: `${16 + depth * 24}px` }}
+      className="flex items-center gap-2 px-2 py-1 hover:bg-gray-50 transition-colors"
+      style={{ paddingLeft: `${8 + depth * 24}px` }}
     >
       {/* Expand/collapse placeholder */}
-      <div className="w-5 h-5 flex items-center justify-center">
+      <div className="w-5 h-5 flex items-center justify-center shrink-0">
         {hasChildren ? (
           <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -155,25 +159,19 @@ function TreeItemPlaceholder({ issue, depth }: TreeItemPlaceholderProps) {
         )}
       </div>
 
-      {/* Issue key */}
-      <span className="text-xs font-mono text-gray-500 min-w-[80px]">{issue.key}</span>
-
-      {/* Type badge */}
-      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${typeColors[issue.type]}`}>
-        {issue.type}
-      </span>
-
-      {/* Title */}
-      <span className="flex-1 text-sm text-gray-900 truncate">{issue.title}</span>
-
-      {/* Status badge */}
-      <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[issue.status]}`}>
-        {issue.status}
-      </span>
+      {/* IssueCard in compact mode */}
+      <div className="flex-1 min-w-0">
+        <IssueCard
+          issue={issue}
+          mode="compact"
+          onClick={onIssueClick}
+          onDoubleClick={onIssueDoubleClick}
+        />
+      </div>
 
       {/* Children count */}
       {hasChildren && (
-        <span className="text-xs text-gray-400">
+        <span className="text-xs text-gray-400 shrink-0">
           {issue.childIds.length} children
         </span>
       )}
@@ -183,10 +181,12 @@ function TreeItemPlaceholder({ issue, depth }: TreeItemPlaceholderProps) {
 
 // Placeholder Kanban View
 interface KanbanViewPlaceholderProps {
-  getIssuesByStatus: ReturnType<typeof useIssueStore>['getIssuesByStatus'];
+  getIssuesByStatus: (status: IssueStatus) => Issue[];
+  onIssueClick: (issue: Issue) => void;
+  onIssueDoubleClick: (issue: Issue) => void;
 }
 
-function KanbanViewPlaceholder({ getIssuesByStatus }: KanbanViewPlaceholderProps) {
+function KanbanViewPlaceholder({ getIssuesByStatus, onIssueClick, onIssueDoubleClick }: KanbanViewPlaceholderProps) {
   const columns = [
     { status: IssueStatus.Todo, label: 'To Do', color: 'bg-gray-400' },
     { status: IssueStatus.InProgress, label: 'In Progress', color: 'bg-blue-500' },
@@ -233,10 +233,18 @@ function KanbanViewPlaceholder({ getIssuesByStatus }: KanbanViewPlaceholderProps
                 </div>
               </div>
 
-              {/* Column content */}
+              {/* Column content with IssueCard components */}
               <div className="flex-1 overflow-y-auto p-2 pt-0 space-y-2">
                 {columnIssues.slice(0, 8).map(issue => (
-                  <KanbanCardPlaceholder key={issue.id} issue={issue} />
+                  <IssueCard
+                    key={issue.id}
+                    issue={issue}
+                    mode="expanded"
+                    showStatus={false}
+                    showParent={true}
+                    onClick={onIssueClick}
+                    onDoubleClick={onIssueDoubleClick}
+                  />
                 ))}
                 {columnIssues.length > 8 && (
                   <div className="p-2 text-xs text-gray-500 text-center">
@@ -259,48 +267,6 @@ function KanbanViewPlaceholder({ getIssuesByStatus }: KanbanViewPlaceholderProps
         <p className="text-sm text-blue-700">
           <span className="font-medium">Note:</span> Full Kanban board with drag-and-drop will be implemented in Phase 4.
         </p>
-      </div>
-    </div>
-  );
-}
-
-// Kanban card placeholder
-interface KanbanCardPlaceholderProps {
-  issue: {
-    id: string;
-    key: string;
-    title: string;
-    type: IssueType;
-    priority: string;
-    storyPoints: number | null;
-  };
-}
-
-function KanbanCardPlaceholder({ issue }: KanbanCardPlaceholderProps) {
-  const typeIcons: Record<IssueType, string> = {
-    [IssueType.Initiative]: '🎯',
-    [IssueType.Epic]: '⚡',
-    [IssueType.Feature]: '✨',
-    [IssueType.Story]: '📖',
-    [IssueType.Task]: '✅',
-    [IssueType.Bug]: '🐛',
-    [IssueType.Subtask]: '📌',
-  };
-
-  return (
-    <div className="bg-white rounded-lg border border-gray-200 p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-      <div className="flex items-start justify-between gap-2">
-        <span className="text-lg">{typeIcons[issue.type]}</span>
-        {issue.storyPoints && (
-          <span className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
-            {issue.storyPoints} SP
-          </span>
-        )}
-      </div>
-      <p className="text-sm text-gray-900 mt-2 line-clamp-2">{issue.title}</p>
-      <div className="flex items-center justify-between mt-3">
-        <span className="text-xs font-mono text-gray-400">{issue.key}</span>
-        <div className="w-6 h-6 rounded-full bg-gray-200" title="Unassigned" />
       </div>
     </div>
   );

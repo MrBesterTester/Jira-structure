@@ -6,3 +6,6 @@
 
 // Layout
 export * from './Layout';
+
+// Issue components
+export * from './Issue';
