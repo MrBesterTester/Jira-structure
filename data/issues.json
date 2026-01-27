@@ -1924,5 +1924,33 @@
     "blockedBy": [],
     "blocks": [],
     "relatedTo": []
+  },
+  {
+    "type": "Story",
+    "title": "Test story from browser automation",
+    "description": "This is a test description",
+    "status": "To Do",
+    "priority": "Medium",
+    "parentId": null,
+    "sprint": null,
+    "assignee": null,
+    "reporter": "user-1",
+    "storyPoints": null,
+    "labels": [],
+    "version": null,
+    "components": [],
+    "dueDate": null,
+    "startDate": null,
+    "originalEstimate": null,
+    "timeSpent": null,
+    "remainingEstimate": null,
+    "blockedBy": [],
+    "blocks": [],
+    "relatedTo": [],
+    "id": "issue-1769485960219-3viiq53wi",
+    "key": "PHOENIX-54",
+    "createdAt": "2026-01-27T03:52:40.219Z",
+    "updatedAt": "2026-01-27T03:52:40.219Z",
+    "childIds": []
   }
 ]

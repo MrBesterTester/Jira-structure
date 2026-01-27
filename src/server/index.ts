@@ -5,6 +5,7 @@
  * - Serves static files from the React build directory
  * - Provides REST API endpoints for JSON file operations
  * - Stores data in /data directory at project root
+ * - Auto-opens browser in production mode
  */
 
 import express, { Request, Response, NextFunction } from 'express';
@@ -12,6 +13,9 @@ import cors from 'cors';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+
+// Determine if we're in production mode (running from compiled JS)
+const isProduction = !import.meta.url.endsWith('.ts');
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -22,7 +26,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Data directory path (relative to project root)
-const DATA_DIR = path.join(__dirname, '../../data');
+// In development: src/server -> ../../data
+// In production: dist-server/server -> ../../data
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '../../data');
+
+// Dist directory for serving built React app
+const DIST_DIR = path.join(__dirname, '../../dist');
 
 // Valid data file names
 const VALID_FILES = ['projects', 'issues', 'sprints', 'users', 'structures'] as const;
@@ -123,7 +132,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
 
 // GET /api/:resource - Read a data file
 app.get('/api/:resource', (req: Request, res: Response) => {
-  const { resource } = req.params;
+  const resource = req.params.resource as string;
   
   if (!isValidFileName(resource)) {
     res.status(400).json({
@@ -150,7 +159,7 @@ app.get('/api/:resource', (req: Request, res: Response) => {
 
 // PUT /api/:resource - Write a data file
 app.put('/api/:resource', (req: Request, res: Response) => {
-  const { resource } = req.params;
+  const resource = req.params.resource as string;
   
   if (!isValidFileName(resource)) {
     res.status(400).json({
@@ -193,14 +202,14 @@ app.put('/api/:resource', (req: Request, res: Response) => {
 // ============================================================================
 
 // In production, serve the built React app
-const distPath = path.join(__dirname, '../../dist');
-if (fs.existsSync(distPath)) {
-  app.use(express.static(distPath));
+if (fs.existsSync(DIST_DIR)) {
+  app.use(express.static(DIST_DIR));
   
   // Handle client-side routing - serve index.html for all non-API routes
-  app.get('*', (req: Request, res: Response) => {
+  // Express 5 requires named wildcard parameters
+  app.get('/{*splat}', (req: Request, res: Response) => {
     if (!req.path.startsWith('/api')) {
-      res.sendFile(path.join(distPath, 'index.html'));
+      res.sendFile(path.join(DIST_DIR, 'index.html'));
     }
   });
 } else {
@@ -267,31 +276,62 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 // SERVER STARTUP
 // ============================================================================
 
+/**
+ * Open browser (dynamically imported to avoid issues in production)
+ */
+async function openBrowser(url: string): Promise<void> {
+  try {
+    // Dynamically import 'open' package
+    const open = await import('open');
+    await open.default(url);
+  } catch {
+    // Silently fail if open package is not available
+    console.log(`Open your browser to: ${url}`);
+  }
+}
+
 // Initialize data directory and start server
 initializeDataDirectory();
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
+  const url = `http://localhost:${PORT}`;
+  const hasDistFolder = fs.existsSync(DIST_DIR);
+  
   console.log(`
 ╔════════════════════════════════════════════════════════════╗
-║        Jira Structure Learning Tool - API Server           ║
+║        Jira Structure Learning Tool - Server               ║
 ╠════════════════════════════════════════════════════════════╣
-║  Server running at: http://localhost:${PORT}                  ║
-║  Data directory: ${DATA_DIR}
-║                                                            ║
+║  Server running at: ${url.padEnd(35)}║
+║  Mode: ${(isProduction ? 'Production' : 'Development').padEnd(48)}║
+║  Data directory: ${DATA_DIR.slice(-40).padEnd(40)}║
+╠════════════════════════════════════════════════════════════╣
 ║  Available endpoints:                                      ║
 ║    GET  /api/health      - Health check                    ║
 ║    GET  /api/projects    - Get all projects                ║
-║    PUT  /api/projects    - Update projects                 ║
 ║    GET  /api/issues      - Get all issues                  ║
-║    PUT  /api/issues      - Update issues                   ║
 ║    GET  /api/sprints     - Get all sprints                 ║
-║    PUT  /api/sprints     - Update sprints                  ║
 ║    GET  /api/users       - Get all users                   ║
-║    PUT  /api/users       - Update users                    ║
 ║    GET  /api/structures  - Get all structures              ║
-║    PUT  /api/structures  - Update structures               ║
 ╚════════════════════════════════════════════════════════════╝
   `);
+
+  // Auto-open browser in production mode when dist folder exists
+  if (isProduction && hasDistFolder) {
+    console.log('Opening browser...');
+    await openBrowser(url);
+  } else if (!hasDistFolder) {
+    console.log('Note: Run "npm run build" to create the production app.');
+    console.log('      Then run "npm start" to serve it.');
+  }
+});
+
+// Graceful shutdown
+process.on('SIGINT', () => {
+  console.log('\nShutting down server...');
+  server.close(() => {
+    console.log('Server stopped.');
+    process.exit(0);
+  });
 });
 
 export default app;

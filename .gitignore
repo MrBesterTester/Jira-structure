@@ -26,7 +26,9 @@ ENV/
 
 # Build outputs
 dist/
+dist-server/
 build/
+*.zip
 *.pyc
 __pycache__/
 *.class
@@ -49,6 +51,7 @@ yarn-error.log*
 *.tmp
 *.temp
 .cache/
+*.tsbuildinfo
 
 # Cursor-specific (keep rules, ignore other cache/logs)
 .cursor/browser-logs/

@@ -27,3 +27,9 @@ export * from './ImportExport';
 
 // Filter components
 export * from './Filters';
+
+// Error handling
+export * from './ErrorBoundary';
+
+// UI utilities
+export * from './UI';

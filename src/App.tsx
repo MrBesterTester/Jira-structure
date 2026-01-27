@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import { AppShell } from './components'
+import { AppShell, ErrorBoundary, ToastContainer, KeyboardShortcutsModal } from './components'
 import { initializeStores } from './store'
 
 function App() {
@@ -53,7 +53,13 @@ function App() {
   }
 
   // Main application
-  return <AppShell />
+  return (
+    <ErrorBoundary>
+      <AppShell />
+      <ToastContainer />
+      <KeyboardShortcutsModal />
+    </ErrorBoundary>
+  )
 }
 
 export default App

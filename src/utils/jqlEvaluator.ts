@@ -9,7 +9,8 @@
  * - Array field handling (labels, components)
  */
 
-import type { Issue, IssueType, IssueStatus, Priority } from '../types';
+import type { Issue } from '../types';
+import { IssueType, IssueStatus, Priority } from '../types';
 import type {
   ASTNode,
   BinaryExpression,
@@ -361,6 +362,5 @@ export function getEnumValues(field: string): string[] {
   }
 }
 
-// Re-export types
-import { IssueType as IT, IssueStatus as IS, Priority as P } from '../types';
-export { IT as IssueType, IS as IssueStatus, P as Priority };
+// Re-export enums for consumers
+export { IssueType, IssueStatus, Priority };
