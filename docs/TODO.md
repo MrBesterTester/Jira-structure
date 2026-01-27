@@ -17,9 +17,9 @@
 | 4 | Kanban Board Implementation | Not Started | 0/3 |
 | 5 | Issue Management & Search | Not Started | 0/4 |
 | 6 | Bulk Operations, Import/Export & Polish | Not Started | 0/4 |
-| 7 | MCP Integration (Future) | Not Started | 0/1 |
+| 7 | MCP Integration (Atlassian-Compatible) | Not Started | 0/3 |
 
-**Total Progress: 9/22 steps completed**
+**Total Progress: 9/24 steps completed**
 
 ---
 
@@ -255,25 +255,46 @@
 
 ## Phase 7 (Future): MCP Integration
 
-### Step 7.1: Create MCP Server
-- [ ] Install @modelcontextprotocol/sdk
-- [ ] Create src/mcp/server.ts
-- [ ] Connect to JSON data files
-- [ ] Implement MCP tools:
-  - [ ] list_projects
-  - [ ] get_issue
-  - [ ] search_issues
-  - [ ] create_issue
-  - [ ] update_issue
-  - [ ] delete_issue
-  - [ ] move_issue
-  - [ ] link_issues
-  - [ ] unlink_issues
-  - [ ] get_structure
-- [ ] Implement MCP resources
-- [ ] Add mcp script to package.json
-- [ ] Document MCP setup
-- [ ] **TEST**: MCP server works with Claude Desktop / Cursor
+> **Goal**: Mirror official Atlassian Rovo MCP Server interface for skill transferability.
+
+### Step 7.1: Create Atlassian-Compatible MCP Server
+- [ ] Install @modelcontextprotocol/sdk and zod
+- [ ] Create src/mcp/server.ts with **stdio transport** (required for Claude Desktop)
+- [ ] Connect to JSON data files with file locking
+- [ ] Implement Atlassian-compatible tools (exact names from official API):
+  - [ ] `searchJiraIssuesUsingJql` - JQL search
+  - [ ] `getJiraIssue` - Get issue by key
+  - [ ] `createJiraIssue` - Create new issue
+  - [ ] `editJiraIssue` - Update issue fields
+  - [ ] `transitionJiraIssue` - Change status via workflow
+  - [ ] `getVisibleJiraProjects` - List projects
+  - [ ] `getJiraProjectIssueTypesMetadata` - List issue types
+  - [ ] `getJiraIssueTypeMetaWithFields` - Field metadata
+  - [ ] `getTransitionsForJiraIssue` - Available transitions
+  - [ ] `lookupJiraAccountId` - Find users
+  - [ ] `addCommentToJiraIssue` - Add comments
+- [ ] Implement Structure extension tools (for hierarchy learning):
+  - [ ] `getJiraIssueHierarchy` - Get parent/child tree
+  - [ ] `moveJiraIssueInHierarchy` - Change parent
+  - [ ] `linkJiraIssues` - Create/remove links
+- [ ] Add npm scripts: "mcp" and "mcp:dev"
+- [ ] **TEST**: MCP server connects via stdio, tools respond correctly
+
+### Step 7.2: Configure Claude Desktop Integration
+- [ ] Create docs/MCP-SETUP.md with configuration instructions
+- [ ] Document claude_desktop_config.json setup (macOS + Windows paths)
+- [ ] Add "Transitioning to Real Jira" section
+- [ ] Update START-HERE scripts to mention MCP option
+- [ ] Add MCP section to main README.md
+- [ ] **TEST**: User can add server to Claude Desktop and query data
+
+### Step 7.3: Test Atlassian Compatibility
+- [ ] Create tests/mcp-compatibility.test.ts
+- [ ] Test tool inputs/outputs match Atlassian documentation
+- [ ] Verify error response patterns
+- [ ] Document intentional deviations (Structure extensions)
+- [ ] Create example Claude prompts that work with both local and real Jira
+- [ ] **TEST**: Same prompts work identically when switching to official Atlassian MCP
 
 ---
 
@@ -296,3 +317,4 @@
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-01-26 | Claude (Opus 4.5) | Initial to-dos from blueprint |
+| 1.1 | 2026-01-27 | Claude (Opus 4.5) | Updated Phase 7 for Atlassian MCP compatibility (3 steps) |

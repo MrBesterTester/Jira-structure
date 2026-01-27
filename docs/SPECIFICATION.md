@@ -209,20 +209,38 @@ The final deliverable should include:
 ## 4. MCP Integration (Future Phase)
 
 ### 4.1 Scope
-Full CRUD + Structure manipulation via Model Context Protocol
+Full CRUD + Structure manipulation via Model Context Protocol, **compatible with official Atlassian Rovo MCP Server interface**.
 
-### 4.2 Planned Capabilities
-- **Read**: Query issues, get structure, search with JQL
-- **Create**: Create new issues at any hierarchy level
-- **Update**: Modify any issue field, change status
-- **Delete**: Remove issues (with cascade options)
-- **Structure**: Move issues in hierarchy, create/modify relationships, link issues
+### 4.2 Atlassian Compatibility Goal
+The MCP server will implement the **same tool names and schemas** as the official Atlassian Rovo MCP Server (https://github.com/atlassian/atlassian-mcp-server). This ensures:
 
-### 4.3 MCP Server Requirements
-- Local MCP server (Node.js)
+- Claude skills learned locally transfer directly to real Jira Cloud
+- Users can switch from local simulator to official Atlassian MCP with no prompt changes
+- Same JQL queries, same tool calls, same workflows
+
+### 4.3 Planned Capabilities
+
+**Atlassian-Compatible Tools** (matching official API):
+- `searchJiraIssuesUsingJql`: Query issues with JQL
+- `getJiraIssue`: Get issue by key
+- `createJiraIssue`: Create new issues
+- `editJiraIssue`: Update issue fields
+- `transitionJiraIssue`: Change status via workflow
+- `getVisibleJiraProjects`: List projects
+- `addCommentToJiraIssue`: Add comments
+- `getTransitionsForJiraIssue`: List workflow transitions
+
+**Structure Extension Tools** (for hierarchy learning, not in official API):
+- `getJiraIssueHierarchy`: Get parent/child tree
+- `moveJiraIssueInHierarchy`: Change issue parent
+- `linkJiraIssues`: Create/remove issue links
+
+### 4.4 MCP Server Requirements
+- Local MCP server (Node.js) using **stdio transport** (required for Claude Desktop)
 - Connects to same JSON data as web UI
-- Exposes tools for Claude/AI interaction
-- No cloud authentication needed
+- Exposes tools matching Atlassian's official interface
+- No cloud authentication needed (local-only)
+- Runs as separate process from Express web server
 
 ---
 
@@ -351,3 +369,4 @@ The project is successful when:
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-01-26 | Sam (via Claude) | Initial specification from interview |
+| 1.1 | 2026-01-27 | Claude (Opus 4.5) | Updated Section 4 for Atlassian MCP Server compatibility |

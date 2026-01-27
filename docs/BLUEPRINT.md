@@ -785,38 +785,180 @@ Final polish, build configuration, and distribution packaging:
 
 ## Phase 7 (Future): MCP Integration
 
-**Goal**: Add Model Context Protocol server for AI interaction.
+**Goal**: Add Model Context Protocol server that mirrors the official Atlassian Rovo MCP Server interface.
+
+> **Why Atlassian-Compatible?** This ensures Claude skills learned with the local simulator transfer directly when users switch to real Jira Cloud with the official Atlassian MCP Server.
 
 > Note: This phase is for after the core app is complete.
 
-### Step 7.1: Create MCP Server
+### Step 7.1: Create Atlassian-Compatible MCP Server
+
+**Test**: MCP server connects to Claude Desktop. Tools work identically to official Atlassian MCP.
 
 ```
 PROMPT:
-Create an MCP server for the Jira Structure tool:
+Create an MCP server that mirrors the official Atlassian Rovo MCP Server interface:
 
-1. Create src/mcp/server.ts using @modelcontextprotocol/sdk
-2. Connect to the same JSON data files as the web app
+1. Install dependencies:
+   npm install @modelcontextprotocol/sdk zod
 
-3. Implement MCP tools:
-   - list_projects: Get all projects
-   - get_issue: Get issue by key
-   - search_issues: JQL search
-   - create_issue: Create new issue
-   - update_issue: Update issue fields
-   - delete_issue: Delete issue
-   - move_issue: Change parent
-   - link_issues: Create relationship
-   - unlink_issues: Remove relationship
-   - get_structure: Get full hierarchy tree
+2. Create src/mcp/server.ts with STDIO transport (required for Claude Desktop):
 
-4. Implement MCP resources:
-   - jira://projects - list of projects
-   - jira://issues/{key} - individual issue
-   - jira://structure/{projectKey} - project structure
+   import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+   import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+   
+   const server = new Server({
+     name: "jira-structure-local",
+     version: "1.0.0"
+   }, {
+     capabilities: { tools: {} }
+   });
+   
+   // CRITICAL: Use stdio transport, NOT HTTP
+   const transport = new StdioServerTransport();
+   await server.connect(transport);
 
-5. Add to package.json scripts: "mcp": starts MCP server
-6. Document MCP setup for Claude Desktop / Cursor
+3. Implement Atlassian-compatible Jira tools (use EXACT names from official API):
+
+   Core Issue Tools:
+   - searchJiraIssuesUsingJql: Search issues using JQL query
+     Input: { jql: string, maxResults?: number, startAt?: number }
+     Output: { issues: Issue[], total: number, startAt: number, maxResults: number }
+   
+   - getJiraIssue: Get issue by ID or key
+     Input: { issueIdOrKey: string }
+     Output: { issue: Issue }
+   
+   - createJiraIssue: Create new issue
+     Input: { projectKey: string, issueType: string, summary: string, description?: string, ...fields }
+     Output: { id: string, key: string, self: string }
+   
+   - editJiraIssue: Update issue fields
+     Input: { issueIdOrKey: string, fields: object }
+     Output: { success: boolean }
+   
+   - transitionJiraIssue: Change issue status via workflow
+     Input: { issueIdOrKey: string, transitionId: string }
+     Output: { success: boolean }
+
+   Metadata Tools:
+   - getVisibleJiraProjects: List accessible projects
+     Output: { projects: Project[] }
+   
+   - getJiraProjectIssueTypesMetadata: List issue types in project
+     Input: { projectKey: string }
+     Output: { issueTypes: IssueType[] }
+   
+   - getJiraIssueTypeMetaWithFields: Get field metadata for issue type
+     Input: { projectKey: string, issueTypeId: string }
+     Output: { fields: FieldMeta[] }
+   
+   - getTransitionsForJiraIssue: List available workflow transitions
+     Input: { issueIdOrKey: string }
+     Output: { transitions: Transition[] }
+
+   User & Comment Tools:
+   - lookupJiraAccountId: Find user by name/email
+     Input: { query: string }
+     Output: { users: User[] }
+   
+   - addCommentToJiraIssue: Add comment to issue
+     Input: { issueIdOrKey: string, body: string }
+     Output: { id: string, created: string }
+
+4. Add Structure-specific extension tools (not in official API, for hierarchy learning):
+   - getJiraIssueHierarchy: Get parent/child tree for an issue
+     Input: { issueIdOrKey: string, depth?: number }
+     Output: { issue: Issue, children: Issue[], parent?: Issue }
+   
+   - moveJiraIssueInHierarchy: Change issue's parent
+     Input: { issueIdOrKey: string, newParentKey?: string }
+     Output: { success: boolean }
+   
+   - linkJiraIssues: Create/remove issue links
+     Input: { sourceKey: string, targetKey: string, linkType: string, action: 'create' | 'remove' }
+     Output: { success: boolean }
+
+5. Connect to same /data/*.json files as web UI
+   - Read/write operations should be atomic to avoid conflicts with Express server
+   - Use file locking or optimistic concurrency
+
+6. Add npm scripts to package.json:
+   "mcp": "node dist/mcp/server.js",
+   "mcp:dev": "tsx src/mcp/server.ts"
+
+7. Create Claude Desktop configuration documentation
+```
+
+### Step 7.2: Configure Claude Desktop Integration
+
+**Test**: User can add MCP server to Claude Desktop and interact with local Jira data.
+
+```
+PROMPT:
+Create MCP setup documentation and configuration:
+
+1. Create docs/MCP-SETUP.md with:
+   
+   ## Claude Desktop Configuration
+   
+   Add to your Claude Desktop config file:
+   
+   **macOS**: ~/Library/Application Support/Claude/claude_desktop_config.json
+   **Windows**: %APPDATA%\Claude\claude_desktop_config.json
+   
+   ```json
+   {
+     "mcpServers": {
+       "jira-structure-local": {
+         "command": "node",
+         "args": ["/absolute/path/to/jira-structure/dist/mcp/server.js"],
+         "env": {
+           "DATA_DIR": "/absolute/path/to/jira-structure/data"
+         }
+       }
+     }
+   }
+   ```
+   
+   ## Transitioning to Real Jira
+   
+   When ready to use real Jira Cloud:
+   1. Remove "jira-structure-local" from config
+   2. Add official Atlassian MCP Server (see https://github.com/atlassian/atlassian-mcp-server)
+   3. Your Claude skills and prompts will work identically!
+
+2. Update START-HERE scripts to mention MCP setup option
+
+3. Add MCP section to main README.md
+```
+
+### Step 7.3: Test Atlassian Compatibility
+
+**Test**: Verify tool behavior matches official Atlassian MCP Server.
+
+```
+PROMPT:
+Create test suite for MCP Atlassian compatibility:
+
+1. Create tests/mcp-compatibility.test.ts
+
+2. Test each tool with inputs/outputs matching Atlassian documentation:
+   - searchJiraIssuesUsingJql with various JQL queries
+   - createJiraIssue with required and optional fields
+   - editJiraIssue field updates
+   - transitionJiraIssue status changes
+   - getVisibleJiraProjects listing
+   
+3. Verify error responses match Atlassian patterns
+
+4. Document any intentional deviations (e.g., Structure extension tools)
+
+5. Create example Claude prompts that work with both local and real Jira:
+   - "Find all high-priority bugs in the current sprint"
+   - "Create a new story under epic PHOENIX-5"
+   - "Move issue PHOENIX-42 to In Progress"
+   - "Show me the hierarchy under initiative PHOENIX-1"
 ```
 
 ---
@@ -867,3 +1009,4 @@ jira-structure-app/
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-01-26 | Claude (Opus 4.5) | Initial blueprint from specification |
+| 1.1 | 2026-01-27 | Claude (Opus 4.5) | Updated Phase 7 for Atlassian MCP Server compatibility |

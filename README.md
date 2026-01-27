@@ -12,6 +12,9 @@ This application simulates Atlassian Jira with the Structure plugin, purpose-bui
 - Use Claude Desktop's Cowork feature to query, create, and manipulate Jira-like issues
 - Learn Jira Structure hierarchies (Initiative → Epic → Story → Task) without a Jira subscription
 - Practice AI-assisted project management in a safe, local environment
+- **Transferable skills**: The MCP server mirrors the official Atlassian Rovo MCP interface, so prompts you learn here work identically with real Jira Cloud
+  - *"Find all high-priority bugs in the current sprint"*
+  - *"Create a story under epic PHOENIX-5"*
 
 ### Key Features
 
