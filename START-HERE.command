@@ -97,6 +97,11 @@ echo ""
 echo "The application will open in your browser automatically."
 echo -e "${YELLOW}Press Ctrl+C to stop the server when done.${NC}"
 echo ""
+echo -e "${BLUE}╔════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${BLUE}║  TIP: Connect Claude Desktop for AI-powered workflows!    ║${NC}"
+echo -e "${BLUE}║  See docs/MCP-SETUP.md for configuration instructions.    ║${NC}"
+echo -e "${BLUE}╚════════════════════════════════════════════════════════════╝${NC}"
+echo ""
 
 # Start the server (it will auto-open browser)
 npm start

@@ -74,22 +74,50 @@ No git, no cloning, no command line expertise needed.
 
 ---
 
-## Connecting Claude Cowork
+## Connecting Claude Desktop (MCP Integration)
 
 This is the main event! The tool includes an MCP (Model Context Protocol) server that lets Claude interact with your Jira data through natural language.
 
-### Setup (One-Time)
+### Why a Local MCP Server?
 
-1. **Start the Jira Structure app** (see Quick Start above)
-2. **Open Claude Desktop** → Settings → **MCP Servers**
-3. **Add this configuration** (edit the path to match where you unzipped):
+You might wonder: *"Why not just use Atlassian's official MCP server?"*
+
+**Because Atlassian's MCP requires a Jira Cloud subscription.** It connects to Atlassian's paid cloud APIs — you can't use it without an account and API token.
+
+This local MCP server is **completely free** and connects to your local sample data instead:
+
+| | This Local MCP | Atlassian's Official MCP |
+|---|---|---|
+| **Cost** | Free | Requires Jira Cloud subscription |
+| **Connects to** | Local JSON files | Atlassian Cloud APIs |
+| **Data** | Safe sample data | Your real production data |
+| **Purpose** | Learn & practice | Production use |
+
+The tool names and parameters mirror Atlassian's interface, so when you're ready to upgrade to real Jira, your Claude prompts transfer directly — no relearning needed.
+
+> **Detailed Setup Guide**: See [docs/MCP-SETUP.md](docs/MCP-SETUP.md) for complete configuration instructions, troubleshooting, and example prompts.
+
+### Quick Setup
+
+The MCP server is pre-built and included in the package — no build step required.
+
+1. **Edit your Claude Desktop config file**:
+   - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+2. **Add this configuration** (edit the paths to match your installation):
 
    **Mac/Linux:**
    ```json
    {
-     "jira-structure": {
-       "command": "node",
-       "args": ["/path/to/jira-structure/src/mcp/server.js"]
+     "mcpServers": {
+       "jira-structure-local": {
+         "command": "node",
+         "args": ["/path/to/jira-structure/dist-server/mcp/server.js"],
+         "env": {
+           "DATA_DIR": "/path/to/jira-structure/data"
+         }
+       }
      }
    }
    ```
@@ -97,24 +125,37 @@ This is the main event! The tool includes an MCP (Model Context Protocol) server
    **Windows:**
    ```json
    {
-     "jira-structure": {
-       "command": "node",
-       "args": ["C:\\path\\to\\jira-structure\\src\\mcp\\server.js"]
+     "mcpServers": {
+       "jira-structure-local": {
+         "command": "node",
+         "args": ["C:\\path\\to\\jira-structure\\dist-server\\mcp\\server.js"],
+         "env": {
+           "DATA_DIR": "C:\\path\\to\\jira-structure\\data"
+         }
+       }
      }
    }
    ```
 
-4. **Restart Claude Desktop**
-5. Look for the Jira Structure tools in Claude's tool list — you're connected!
+3. **Restart Claude Desktop** (fully quit and reopen)
+4. Look for the Jira Structure tools in Claude's tool list — you're connected!
 
 ### For Cursor IDE Users
 
-(If you prefer Cursor over Claude Desktop)
-
-1. Open Cursor settings (Cmd/Ctrl + ,)
+1. Open Cursor settings (`Cmd/Ctrl + ,`)
 2. Search for "MCP"
-3. Add the Jira Structure MCP server path
+3. Add the Jira Structure MCP server path (same as above)
 4. Restart Cursor
+
+### Transitioning to Real Jira
+
+This MCP server mirrors the **official Atlassian Rovo MCP Server** interface. When you're ready to use real Jira Cloud:
+
+1. Remove `jira-structure-local` from your config
+2. Install the [official Atlassian MCP Server](https://github.com/atlassian/atlassian-mcp-server)
+3. **Your prompts work identically!** The skills you learn here transfer directly.
+
+See [docs/MCP-SETUP.md](docs/MCP-SETUP.md) for detailed transition instructions.
 
 ### What You Can Ask Claude
 

@@ -88,6 +88,11 @@ echo.
 echo The application will open in your browser automatically.
 echo Press Ctrl+C to stop the server when done.
 echo.
+echo ==============================================================
+echo   TIP: Connect Claude Desktop for AI-powered workflows!
+echo   See docs\MCP-SETUP.md for configuration instructions.
+echo ==============================================================
+echo.
 
 REM Start the server (it will auto-open browser)
 call npm start
