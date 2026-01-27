@@ -14,3 +14,10 @@ export type { TreeNodeProps } from './TreeNode';
 
 // Tree toolbar
 export { TreeToolbar } from './TreeToolbar';
+
+// Relationship visualization
+export { RelationshipLines } from './RelationshipLines';
+export type { RelationshipLinesProps } from './RelationshipLines';
+
+export { RelationshipTooltip } from './RelationshipTooltip';
+export type { RelationshipTooltipProps } from './RelationshipTooltip';

@@ -23,6 +23,8 @@ interface TreeToolbarProps {
   typeFilters: IssueType[];
   /** Current sort configuration */
   sortConfig: SortConfig | null;
+  /** Whether relationship lines are shown */
+  showRelationshipLines: boolean;
   /** Handler for expand all */
   onExpandAll: () => void;
   /** Handler for collapse all */
@@ -31,6 +33,8 @@ interface TreeToolbarProps {
   onTypeFilterChange: (types: IssueType[]) => void;
   /** Handler for sort change */
   onSortChange: (config: SortConfig | null) => void;
+  /** Handler for toggling relationship lines */
+  onToggleRelationshipLines: () => void;
 }
 
 // ============================================================================
@@ -56,10 +60,12 @@ export const TreeToolbar = memo(function TreeToolbar({
   rootIssueCount,
   typeFilters,
   sortConfig,
+  showRelationshipLines,
   onExpandAll,
   onCollapseAll,
   onTypeFilterChange,
   onSortChange,
+  onToggleRelationshipLines,
 }: TreeToolbarProps) {
   const allTypes = getAllIssueTypes();
 
@@ -119,6 +125,26 @@ export const TreeToolbar = memo(function TreeToolbar({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
           </svg>
           Collapse All
+        </button>
+        
+        <div className="w-px h-6 bg-gray-200 mx-2" />
+        
+        {/* Relationship lines toggle */}
+        <button
+          onClick={onToggleRelationshipLines}
+          className={`
+            px-3 py-1.5 text-sm rounded-md transition-colors flex items-center gap-1.5
+            ${showRelationshipLines 
+              ? 'bg-purple-50 text-purple-700 border border-purple-200' 
+              : 'text-gray-600 hover:bg-gray-100 border border-transparent'
+            }
+          `}
+          title={showRelationshipLines ? 'Hide relationship lines' : 'Show relationship lines'}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+          {showRelationshipLines ? 'Hide Lines' : 'Show Lines'}
         </button>
         
         <div className="w-px h-6 bg-gray-200 mx-2" />

@@ -30,6 +30,7 @@ import { useIssueStore, useUIStore } from '../../store';
 import { validateMove } from '../../utils';
 import { TreeNode } from './TreeNode';
 import { TreeToolbar } from './TreeToolbar';
+import { RelationshipLines } from './RelationshipLines';
 import { IssueCard } from '../Issue';
 
 // ============================================================================
@@ -126,6 +127,7 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
   const focusedIssueId = useUIStore(state => state.focusedIssueId);
   const filters = useUIStore(state => state.filters);
   const sortConfig = useUIStore(state => state.sortConfig);
+  const showRelationshipLines = useUIStore(state => state.showRelationshipLines);
   
   const expandIssue = useUIStore(state => state.expandIssue);
   const collapseIssue = useUIStore(state => state.collapseIssue);
@@ -139,14 +141,16 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
   const openDetailPanel = useUIStore(state => state.openDetailPanel);
   const setFilter = useUIStore(state => state.setFilter);
   const setSortConfig = useUIStore(state => state.setSortConfig);
+  const toggleRelationshipLines = useUIStore(state => state.toggleRelationshipLines);
 
   // Drag-and-drop state
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dropTargetId, setDropTargetId] = useState<string | null>(null);
   const [draggedIssue, setDraggedIssue] = useState<Issue | null>(null);
 
-  // Refs for keyboard navigation
+  // Refs for keyboard navigation and relationship lines
   const containerRef = useRef<HTMLDivElement>(null);
+  const treeContainerRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const lastSelectedId = useRef<string | null>(null);
 
@@ -332,6 +336,38 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
   const handleSortChange = useCallback((config: SortConfig | null) => {
     setSortConfig(config);
   }, [setSortConfig]);
+
+  const handleToggleRelationshipLines = useCallback(() => {
+    toggleRelationshipLines();
+  }, [toggleRelationshipLines]);
+
+  const handleRelationshipIssueClick = useCallback((issueId: string) => {
+    // Focus and select the clicked issue
+    setFocusedIssue(issueId);
+    selectMultipleIssues([issueId]);
+    
+    // Expand parents to make the issue visible
+    const targetIssue = issues.find(i => i.id === issueId);
+    if (targetIssue) {
+      // Expand all ancestors
+      let currentId = targetIssue.parentId;
+      const parentsToExpand: string[] = [];
+      while (currentId) {
+        parentsToExpand.push(currentId);
+        const parent = issues.find(i => i.id === currentId);
+        currentId = parent?.parentId ?? null;
+      }
+      if (parentsToExpand.length > 0) {
+        expandAll([...expandedIssueIds, ...parentsToExpand]);
+      }
+      
+      // Scroll to the issue after a brief delay to allow DOM update
+      setTimeout(() => {
+        const element = nodeRefs.current.get(issueId);
+        element?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }, 100);
+    }
+  }, [issues, setFocusedIssue, selectMultipleIssues, expandAll, expandedIssueIds]);
 
   const handleIssueClick = useCallback((issue: Issue, event: React.MouseEvent) => {
     // Ctrl/Cmd + click: toggle selection
@@ -541,10 +577,12 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
           rootIssueCount={0}
           typeFilters={filters.types}
           sortConfig={sortConfig}
+          showRelationshipLines={showRelationshipLines}
           onExpandAll={handleExpandAll}
           onCollapseAll={handleCollapseAll}
           onTypeFilterChange={handleTypeFilterChange}
           onSortChange={handleSortChange}
+          onToggleRelationshipLines={handleToggleRelationshipLines}
         />
         
         <div className="bg-white rounded-lg border border-gray-200 p-8">
@@ -572,10 +610,12 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
         rootIssueCount={sortedRootIssues.length}
         typeFilters={filters.types}
         sortConfig={sortConfig}
+        showRelationshipLines={showRelationshipLines}
         onExpandAll={handleExpandAll}
         onCollapseAll={handleCollapseAll}
         onTypeFilterChange={handleTypeFilterChange}
         onSortChange={handleSortChange}
+        onToggleRelationshipLines={handleToggleRelationshipLines}
       />
 
       {/* Tree container with DnD */}
@@ -595,7 +635,15 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
           role="tree"
           aria-label="Issue hierarchy"
         >
-          <div className="divide-y divide-gray-100">
+          <div ref={treeContainerRef} className="relative divide-y divide-gray-100">
+            {/* Relationship lines overlay */}
+            <RelationshipLines
+              issues={issues}
+              visibleIssueIds={visibleIssueIds}
+              show={showRelationshipLines}
+              containerRef={treeContainerRef}
+            />
+            
             {sortedRootIssues.map(issue => (
               <TreeNode
                 key={issue.id}
@@ -612,6 +660,7 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
                 onIssueClick={handleIssueClick}
                 onIssueDoubleClick={handleIssueDoubleClick}
                 nodeRef={setNodeRef}
+                onRelationshipIssueClick={handleRelationshipIssueClick}
               />
             ))}
           </div>

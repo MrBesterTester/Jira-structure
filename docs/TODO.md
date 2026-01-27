@@ -13,13 +13,13 @@
 |-------|-------------|--------|----------|
 | 1 | Project Setup & Core Data Layer | Complete | 4/4 |
 | 2 | State Management & Basic UI Shell | Complete | 3/3 |
-| 3 | Tree View Implementation | In Progress | 2/3 |
+| 3 | Tree View Implementation | Complete | 3/3 |
 | 4 | Kanban Board Implementation | Not Started | 0/3 |
 | 5 | Issue Management & Search | Not Started | 0/4 |
 | 6 | Bulk Operations, Import/Export & Polish | Not Started | 0/4 |
 | 7 | MCP Integration (Atlassian-Compatible) | Not Started | 0/3 |
 
-**Total Progress: 9/24 steps completed**
+**Total Progress: 10/24 steps completed**
 
 ---
 
@@ -120,11 +120,11 @@
 - [x] **TEST**: Can drag issues to new parents, hierarchy updates, data persists
 
 ### Step 3.3: Add Relationship Visualization
-- [ ] Create RelationshipLines.tsx (SVG overlay)
-- [ ] Add blocked/blocking indicators to TreeNode
-- [ ] Create RelationshipTooltip.tsx
-- [ ] Add toggle to show/hide relationship lines
-- [ ] **TEST**: Dependency lines show correctly, blocked items visually distinct
+- [x] Create RelationshipLines.tsx (SVG overlay)
+- [x] Add blocked/blocking indicators to TreeNode
+- [x] Create RelationshipTooltip.tsx
+- [x] Add toggle to show/hide relationship lines
+- [x] **TEST**: Dependency lines show correctly, blocked items visually distinct
 
 ---
 

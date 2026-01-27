@@ -24,6 +24,7 @@ interface UIState {
   
   // Tree View State
   expandedIssueIds: string[];
+  showRelationshipLines: boolean;
   
   // Issue Detail Panel
   detailPanelOpen: boolean;
@@ -63,6 +64,8 @@ interface UIState {
   toggleIssueExpanded: (issueId: string) => void;
   expandAll: (issueIds: string[]) => void;
   collapseAll: () => void;
+  toggleRelationshipLines: () => void;
+  setShowRelationshipLines: (show: boolean) => void;
   
   // Actions - Detail Panel
   openDetailPanel: (issueId: string) => void;
@@ -101,6 +104,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   
   // Initial state - Tree
   expandedIssueIds: [],
+  showRelationshipLines: false,
   
   // Initial state - Detail Panel
   detailPanelOpen: false,
@@ -226,6 +230,14 @@ export const useUIStore = create<UIState>((set, get) => ({
 
   collapseAll: () => {
     set({ expandedIssueIds: [] });
+  },
+
+  toggleRelationshipLines: () => {
+    set(state => ({ showRelationshipLines: !state.showRelationshipLines }));
+  },
+
+  setShowRelationshipLines: (show) => {
+    set({ showRelationshipLines: show });
   },
 
   // ============================================================================

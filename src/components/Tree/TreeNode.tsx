@@ -15,6 +15,7 @@ import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import type { Issue } from '../../types';
 import { IssueCard } from '../Issue';
+import { RelationshipTooltip } from './RelationshipTooltip';
 
 // ============================================================================
 // TYPES
@@ -46,7 +47,9 @@ interface TreeNodeProps {
   /** Handler for issue double-click (open detail) */
   onIssueDoubleClick: (issue: Issue) => void;
   /** Reference callback for keyboard navigation */
-  nodeRef?: (issueId: string, element: HTMLDivElement | null) => void;
+  nodeRef?: ((issueId: string, element: HTMLDivElement | null) => void) | undefined;
+  /** Handler for relationship issue click */
+  onRelationshipIssueClick?: ((issueId: string) => void) | undefined;
 }
 
 // ============================================================================
@@ -161,6 +164,67 @@ const DropIndicator = memo(function DropIndicator({ position, indentPx }: DropIn
 });
 
 // ============================================================================
+// RELATIONSHIP INDICATORS
+// ============================================================================
+
+interface RelationshipIndicatorsProps {
+  issue: Issue;
+}
+
+const RelationshipIndicators = memo(function RelationshipIndicators({ issue }: RelationshipIndicatorsProps) {
+  const isBlocked = issue.blockedBy.length > 0;
+  const isBlocking = issue.blocks.length > 0;
+  const hasRelated = issue.relatedTo.length > 0;
+  
+  if (!isBlocked && !isBlocking && !hasRelated) {
+    return null;
+  }
+  
+  return (
+    <div className="flex items-center gap-1 shrink-0">
+      {/* Blocked indicator (red) */}
+      {isBlocked && (
+        <div 
+          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs bg-red-50 text-red-600 border border-red-200"
+          title={`Blocked by ${issue.blockedBy.length} issue${issue.blockedBy.length > 1 ? 's' : ''}`}
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+          </svg>
+          <span>{issue.blockedBy.length}</span>
+        </div>
+      )}
+      
+      {/* Blocking indicator (orange) */}
+      {isBlocking && (
+        <div 
+          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs bg-orange-50 text-orange-600 border border-orange-200"
+          title={`Blocking ${issue.blocks.length} issue${issue.blocks.length > 1 ? 's' : ''}`}
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>{issue.blocks.length}</span>
+        </div>
+      )}
+      
+      {/* Related indicator (gray) */}
+      {hasRelated && (
+        <div 
+          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs bg-gray-50 text-gray-600 border border-gray-200"
+          title={`Related to ${issue.relatedTo.length} issue${issue.relatedTo.length > 1 ? 's' : ''}`}
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+          <span>{issue.relatedTo.length}</span>
+        </div>
+      )}
+    </div>
+  );
+});
+
+// ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
@@ -178,6 +242,7 @@ export const TreeNode = memo(function TreeNode({
   onIssueClick,
   onIssueDoubleClick,
   nodeRef,
+  onRelationshipIssueClick,
 }: TreeNodeProps) {
   const hasChildren = children.length > 0;
   const indentPx = BASE_PADDING + depth * INDENT_PER_LEVEL;
@@ -298,6 +363,14 @@ export const TreeNode = memo(function TreeNode({
           />
         </div>
 
+        {/* Relationship indicators with tooltip */}
+        <RelationshipTooltip 
+          issue={issue}
+          onIssueClick={onRelationshipIssueClick}
+        >
+          <RelationshipIndicators issue={issue} />
+        </RelationshipTooltip>
+
         {/* Children count badge */}
         {hasChildren && (
           <span className="text-xs text-gray-400 pr-2 shrink-0">
@@ -324,6 +397,7 @@ export const TreeNode = memo(function TreeNode({
               onToggleExpand={onToggleExpand}
               onIssueClick={onIssueClick}
               onIssueDoubleClick={onIssueDoubleClick}
+              onRelationshipIssueClick={onRelationshipIssueClick}
               {...(nodeRef ? { nodeRef } : {})}
             />
           ))}
