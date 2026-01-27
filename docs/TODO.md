@@ -307,9 +307,14 @@
 - [ ] Add `jira-structure.zip` to .gitignore (exclude built package from repo)
 - [ ] Create LICENSE file (MIT recommended for learning tools)
 - [ ] Review README.md for any sensitive paths or personal info
-- [ ] Create GitHub repository
-- [ ] Push code to GitHub
-- [ ] **TEST**: Repository is public and accessible
+- [ ] Create GitHub repository at https://github.com/new (name: `jira-structure`)
+- [ ] Push code to GitHub:
+  ```bash
+  git remote add origin git@github.com:MrBesterTester/jira-structure.git
+  git branch -M main
+  git push -u origin main
+  ```
+- [ ] **TEST**: Repository is public and accessible at https://github.com/MrBesterTester/jira-structure
 
 ### Step 8.2: Create Release Package
 - [ ] Run `npm run package` to create jira-structure.zip
