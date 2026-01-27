@@ -16,10 +16,10 @@
 | 3 | Tree View Implementation | Complete | 3/3 |
 | 4 | Kanban Board Implementation | Complete | 3/3 |
 | 5 | Issue Management & Search | Complete | 4/4 |
-| 6 | Bulk Operations, Import/Export & Polish | Not Started | 0/4 |
+| 6 | Bulk Operations, Import/Export & Polish | In Progress | 1/4 |
 | 7 | MCP Integration (Atlassian-Compatible) | Not Started | 0/3 |
 
-**Total Progress: 17/24 steps completed**
+**Total Progress: 18/24 steps completed**
 
 ---
 
@@ -201,15 +201,15 @@
 ## Phase 6: Bulk Operations, Import/Export & Polish
 
 ### Step 6.1: Implement Bulk Editing
-- [ ] Add checkboxes to issue cards
-- [ ] Implement shift+click range selection
-- [ ] Implement ctrl/cmd+click toggle selection
-- [ ] Create BulkActionBar.tsx
-- [ ] Create BulkEditModal.tsx
-- [ ] Implement bulkUpdateIssues action
-- [ ] Implement bulkDeleteIssues action
-- [ ] Create BulkMoveModal.tsx
-- [ ] **TEST**: Can select multiple, bulk actions update all selected
+- [x] Add checkboxes to issue cards
+- [x] Implement shift+click range selection
+- [x] Implement ctrl/cmd+click toggle selection
+- [x] Create BulkActionBar.tsx
+- [x] Create BulkEditModal.tsx
+- [x] Implement bulkUpdateIssues action
+- [x] Implement bulkDeleteIssues action
+- [x] Create BulkMoveModal.tsx
+- [x] **TEST**: Can select multiple, bulk actions update all selected
 
 ### Step 6.2: Implement Import/Export
 - [ ] Create exportData.ts (JSON and CSV)

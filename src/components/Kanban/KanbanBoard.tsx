@@ -11,7 +11,7 @@
  * - Swimlane grouping by assignee, priority, or epic (Step 4.3)
  */
 
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useRef } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -310,8 +310,13 @@ export function KanbanBoard({ className = '' }: KanbanBoardProps) {
   const filters = useUIStore(state => state.filters);
   const openDetailPanel = useUIStore(state => state.openDetailPanel);
   const toggleIssueSelection = useUIStore(state => state.toggleIssueSelection);
+  const selectMultipleIssues = useUIStore(state => state.selectMultipleIssues);
+  const selectRange = useUIStore(state => state.selectRange);
   const openCreateIssueModal = useUIStore(state => state.openCreateIssueModal);
   const users = useUserStore(state => state.users);
+  
+  // Ref for last selected issue (for shift+click range selection)
+  const lastSelectedId = useRef<string | null>(null);
 
   // Drag-and-drop state
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -529,14 +534,37 @@ export function KanbanBoard({ className = '' }: KanbanBoardProps) {
     setDraggedIssue(null);
   }, []);
 
-  // Event handlers
-  const handleIssueClick = (issue: Issue) => {
-    toggleIssueSelection(issue.id);
-  };
+  // Build flat list of visible issue IDs for range selection
+  const visibleIssueIds = useMemo(() => {
+    return filteredIssues.map(issue => issue.id);
+  }, [filteredIssues]);
 
-  const handleIssueDoubleClick = (issue: Issue) => {
+  // Event handlers
+  const handleIssueClick = useCallback((issue: Issue, event?: React.MouseEvent) => {
+    // Ctrl/Cmd + click: toggle selection
+    if (event?.ctrlKey || event?.metaKey) {
+      toggleIssueSelection(issue.id);
+    }
+    // Shift + click: range selection
+    else if (event?.shiftKey && lastSelectedId.current) {
+      selectRange(lastSelectedId.current, issue.id, visibleIssueIds);
+    }
+    // Normal click: single selection
+    else {
+      selectMultipleIssues([issue.id]);
+    }
+    
+    lastSelectedId.current = issue.id;
+  }, [toggleIssueSelection, selectRange, selectMultipleIssues, visibleIssueIds]);
+
+  const handleCheckboxChange = useCallback((issue: Issue) => {
+    toggleIssueSelection(issue.id);
+    lastSelectedId.current = issue.id;
+  }, [toggleIssueSelection]);
+
+  const handleIssueDoubleClick = useCallback((issue: Issue) => {
     openDetailPanel(issue.id);
-  };
+  }, [openDetailPanel]);
 
   // Handle add issue from column
   const handleAddIssue = useCallback((status: IssueStatus) => {
@@ -605,6 +633,7 @@ export function KanbanBoard({ className = '' }: KanbanBoardProps) {
                   dragOverSwimlaneId={dragOverSwimlaneId}
                   onIssueClick={handleIssueClick}
                   onIssueDoubleClick={handleIssueDoubleClick}
+                  onCheckboxChange={handleCheckboxChange}
                   onAddIssue={handleAddIssue}
                 />
               ))}
@@ -638,6 +667,7 @@ export function KanbanBoard({ className = '' }: KanbanBoardProps) {
                   isDropTarget={isDropTarget}
                   onIssueClick={handleIssueClick}
                   onIssueDoubleClick={handleIssueDoubleClick}
+                  onCheckboxChange={handleCheckboxChange}
                   onAddIssue={handleAddIssue}
                 />
               );

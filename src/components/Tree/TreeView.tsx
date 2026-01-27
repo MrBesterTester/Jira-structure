@@ -125,6 +125,7 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
   
   const expandedIssueIds = useUIStore(state => state.expandedIssueIds);
   const focusedIssueId = useUIStore(state => state.focusedIssueId);
+  const selectedIssueIds = useUIStore(state => state.selectedIssueIds);
   const filters = useUIStore(state => state.filters);
   const sortConfig = useUIStore(state => state.sortConfig);
   const showRelationshipLines = useUIStore(state => state.showRelationshipLines);
@@ -157,6 +158,9 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
 
   // Convert expandedIssueIds array to Set for efficient lookup
   const expandedIds = useMemo(() => new Set(expandedIssueIds), [expandedIssueIds]);
+  
+  // Convert selectedIssueIds array to Set for efficient lookup
+  const selectedIds = useMemo(() => new Set(selectedIssueIds), [selectedIssueIds]);
 
   // Get root issues (no parent)
   const rootIssues = useMemo(() => {
@@ -391,6 +395,11 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
     lastSelectedId.current = issue.id;
     setFocusedIssue(issue.id);
   }, [toggleIssueSelection, selectRange, selectMultipleIssues, setFocusedIssue, visibleIssueIds]);
+
+  const handleCheckboxChange = useCallback((issue: Issue) => {
+    toggleIssueSelection(issue.id);
+    lastSelectedId.current = issue.id;
+  }, [toggleIssueSelection]);
 
   const handleIssueDoubleClick = useCallback((issue: Issue) => {
     openDetailPanel(issue.id);
@@ -659,13 +668,16 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
                 isExpanded={expandedIds.has(issue.id)}
                 children={getChildrenForIssue(issue.id)}
                 expandedIds={expandedIds}
+                selectedIds={selectedIds}
                 getChildrenForIssue={getChildrenForIssue}
                 isFocused={focusedIssueId === issue.id}
+                isSelected={selectedIds.has(issue.id)}
                 draggingId={draggingId}
                 dropTargetId={dropTargetId}
                 onToggleExpand={handleToggleExpand}
                 onIssueClick={handleIssueClick}
                 onIssueDoubleClick={handleIssueDoubleClick}
+                onCheckboxChange={handleCheckboxChange}
                 nodeRef={setNodeRef}
                 onRelationshipIssueClick={handleRelationshipIssueClick}
               />

@@ -50,9 +50,11 @@ export interface KanbanSwimlaneProps {
   /** Current drop target swimlane ID */
   dragOverSwimlaneId?: string | null;
   /** Callback when an issue card is clicked */
-  onIssueClick?: (issue: Issue) => void;
+  onIssueClick?: (issue: Issue, event?: React.MouseEvent) => void;
   /** Callback when an issue card is double-clicked */
   onIssueDoubleClick?: (issue: Issue) => void;
+  /** Callback when checkbox is changed */
+  onCheckboxChange?: (issue: Issue) => void;
   /** Callback when add issue button is clicked in a column */
   onAddIssue?: (status: IssueStatus) => void;
   /** Whether this swimlane is initially collapsed */
@@ -132,6 +134,7 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
   dragOverSwimlaneId,
   onIssueClick,
   onIssueDoubleClick,
+  onCheckboxChange,
   onAddIssue,
   defaultCollapsed = false,
   className = '',
@@ -258,6 +261,7 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
                 isDropTarget={isColumnDropTarget}
                 {...(onIssueClick && { onIssueClick })}
                 {...(onIssueDoubleClick && { onIssueDoubleClick })}
+                {...(onCheckboxChange && { onCheckboxChange })}
                 {...(onAddIssue && { onAddIssue })}
               />
             );

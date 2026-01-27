@@ -12,6 +12,7 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { MainContent } from './MainContent';
 import { IssueDetailPanel, CreateIssueModal } from '../Issue';
+import { BulkActionBar } from '../BulkActions';
 
 interface AppShellProps {
   children?: ReactNode;
@@ -45,6 +46,9 @@ export function AppShell({ children }: AppShellProps) {
 
       {/* Create Issue Modal */}
       <CreateIssueModal />
+
+      {/* Bulk Action Bar (floating, appears when issues selected) */}
+      <BulkActionBar />
     </div>
   );
 }

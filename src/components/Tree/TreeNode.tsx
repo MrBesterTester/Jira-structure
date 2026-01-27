@@ -32,10 +32,14 @@ interface TreeNodeProps {
   children: Issue[];
   /** Set of all expanded issue IDs (for recursive rendering) */
   expandedIds: Set<string>;
+  /** Set of all selected issue IDs (for multi-select) */
+  selectedIds?: Set<string> | undefined;
   /** Function to get children for an issue ID */
   getChildrenForIssue: (issueId: string) => Issue[];
   /** Whether this node is currently focused for keyboard navigation */
   isFocused: boolean;
+  /** Whether this node is selected (for single-node selection state) */
+  isSelected?: boolean | undefined;
   /** ID of the issue being dragged (for styling) */
   draggingId: string | null;
   /** ID of current drop target */
@@ -46,6 +50,8 @@ interface TreeNodeProps {
   onIssueClick: (issue: Issue, event: React.MouseEvent) => void;
   /** Handler for issue double-click (open detail) */
   onIssueDoubleClick: (issue: Issue) => void;
+  /** Handler for checkbox change (selection toggle) */
+  onCheckboxChange?: ((issue: Issue) => void) | undefined;
   /** Reference callback for keyboard navigation */
   nodeRef?: ((issueId: string, element: HTMLDivElement | null) => void) | undefined;
   /** Handler for relationship issue click */
@@ -234,19 +240,25 @@ export const TreeNode = memo(function TreeNode({
   isExpanded,
   children,
   expandedIds,
+  selectedIds,
   getChildrenForIssue,
   isFocused,
+  isSelected = false,
   draggingId,
   dropTargetId,
   onToggleExpand,
   onIssueClick,
   onIssueDoubleClick,
+  onCheckboxChange,
   nodeRef,
   onRelationshipIssueClick,
 }: TreeNodeProps) {
   const hasChildren = children.length > 0;
   const indentPx = BASE_PADDING + depth * INDENT_PER_LEVEL;
   const isDropTarget = dropTargetId === issue.id;
+  
+  // Determine if this node is selected (prefer explicit prop, fall back to set)
+  const nodeIsSelected = isSelected || (selectedIds?.has(issue.id) ?? false);
 
   // Draggable setup
   const {
@@ -310,6 +322,12 @@ export const TreeNode = memo(function TreeNode({
     onIssueDoubleClick(clickedIssue);
   }, [onIssueDoubleClick]);
 
+  // Handle checkbox change
+  const handleCheckboxChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    onCheckboxChange?.(issue);
+  }, [issue, onCheckboxChange]);
+
   // Don't render children of dragged node while dragging
   const shouldRenderChildren = isExpanded && hasChildren && !isDraggingActive;
 
@@ -338,6 +356,16 @@ export const TreeNode = memo(function TreeNode({
       >
         {/* Drop indicator for before/after */}
         {isOver && <DropIndicator position="inside" indentPx={indentPx} />}
+
+        {/* Checkbox for multi-select */}
+        <input
+          type="checkbox"
+          checked={nodeIsSelected}
+          onChange={handleCheckboxChange}
+          onClick={(e) => e.stopPropagation()}
+          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100 checked:opacity-100 transition-opacity"
+          aria-label={`Select ${issue.key}`}
+        />
 
         {/* Drag handle (shown on hover) */}
         <DragHandle 
@@ -390,6 +418,7 @@ export const TreeNode = memo(function TreeNode({
               isExpanded={expandedIds.has(childIssue.id)}
               children={getChildrenForIssue(childIssue.id)}
               expandedIds={expandedIds}
+              selectedIds={selectedIds}
               getChildrenForIssue={getChildrenForIssue}
               isFocused={false} // Focused state is managed by parent
               draggingId={draggingId}
@@ -397,6 +426,7 @@ export const TreeNode = memo(function TreeNode({
               onToggleExpand={onToggleExpand}
               onIssueClick={onIssueClick}
               onIssueDoubleClick={onIssueDoubleClick}
+              onCheckboxChange={onCheckboxChange}
               onRelationshipIssueClick={onRelationshipIssueClick}
               {...(nodeRef ? { nodeRef } : {})}
             />

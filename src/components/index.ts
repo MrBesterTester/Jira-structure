@@ -18,3 +18,6 @@ export * from './Kanban';
 
 // Search components
 export * from './Search';
+
+// Bulk action components
+export * from './BulkActions';

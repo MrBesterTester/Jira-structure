@@ -34,9 +34,11 @@ export interface KanbanColumnProps {
   /** Whether this column is the current drop target */
   isDropTarget?: boolean;
   /** Callback when an issue card is clicked */
-  onIssueClick?: (issue: Issue) => void;
+  onIssueClick?: (issue: Issue, event?: React.MouseEvent) => void;
   /** Callback when an issue card is double-clicked */
   onIssueDoubleClick?: (issue: Issue) => void;
+  /** Callback when checkbox is changed */
+  onCheckboxChange?: (issue: Issue) => void;
   /** Callback when the add issue button is clicked */
   onAddIssue?: (status: IssueStatus) => void;
   /** Additional class names */
@@ -57,6 +59,7 @@ export const KanbanColumn = memo(function KanbanColumn({
   isDropTarget = false,
   onIssueClick,
   onIssueDoubleClick,
+  onCheckboxChange,
   onAddIssue,
   className = '',
 }: KanbanColumnProps) {
@@ -126,6 +129,7 @@ export const KanbanColumn = memo(function KanbanColumn({
               isDraggedAway={draggingId === issue.id}
               {...(onIssueClick && { onClick: onIssueClick })}
               {...(onIssueDoubleClick && { onDoubleClick: onIssueDoubleClick })}
+              {...(onCheckboxChange && { onCheckboxChange })}
             />
           ))
         ) : (

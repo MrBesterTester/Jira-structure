@@ -27,9 +27,11 @@ export interface KanbanCardProps {
   /** The issue to display */
   issue: Issue;
   /** Callback when card is clicked */
-  onClick?: (issue: Issue) => void;
+  onClick?: (issue: Issue, event: React.MouseEvent) => void;
   /** Callback when card is double-clicked */
   onDoubleClick?: (issue: Issue) => void;
+  /** Callback when checkbox is changed */
+  onCheckboxChange?: (issue: Issue) => void;
   /** Whether this card is currently being dragged (used by DragOverlay) */
   isDragging?: boolean;
   /** Whether this card has been dragged away from its column (dim the original) */
@@ -46,6 +48,7 @@ export const KanbanCard = memo(function KanbanCard({
   issue,
   onClick,
   onDoubleClick,
+  onCheckboxChange,
   isDragging = false,
   isDraggedAway = false,
   className = '',
@@ -91,7 +94,12 @@ export const KanbanCard = memo(function KanbanCard({
   // Event handlers
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onClick?.(issue);
+    onClick?.(issue, e);
+  };
+  
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    onCheckboxChange?.(issue);
   };
 
   const handleDoubleClick = (e: React.MouseEvent) => {
@@ -102,7 +110,7 @@ export const KanbanCard = memo(function KanbanCard({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      onClick?.(issue);
+      onClick?.(issue, e as unknown as React.MouseEvent);
     }
   };
 
@@ -136,9 +144,19 @@ export const KanbanCard = memo(function KanbanCard({
     >
       {/* Card content */}
       <div className="p-3">
-        {/* Header: Type icon + Priority + Story Points */}
+        {/* Header: Checkbox + Type icon + Priority + Story Points */}
         <div className="flex items-start justify-between gap-2">
-          <IssueTypeIcon type={issue.type} size="md" />
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={handleCheckboxChange}
+              onClick={(e) => e.stopPropagation()}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 shrink-0"
+              aria-label={`Select ${issue.key}`}
+            />
+            <IssueTypeIcon type={issue.type} size="md" />
+          </div>
           
           <div className="flex items-center gap-1.5">
             <PriorityIndicator priority={issue.priority} size="sm" />
