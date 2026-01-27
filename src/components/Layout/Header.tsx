@@ -1,24 +1,31 @@
 /**
  * Header - Top navigation bar
  * 
- * Contains breadcrumb navigation, search bar placeholder,
+ * Contains breadcrumb navigation, JQL search bar with autocomplete,
  * and view toggle buttons (Tree/Kanban).
  */
 
-import { useUIStore, useProjectStore, useIssueStore } from '../../store';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { useUIStore, useProjectStore } from '../../store';
 import type { ViewType } from '../../types';
+import { SearchBar, saveRecentSearch } from '../Search/SearchBar';
+import { SearchResults } from '../Search/SearchResults';
 
 export function Header() {
   const currentView = useUIStore(state => state.currentView);
   const setView = useUIStore(state => state.setView);
   const searchQuery = useUIStore(state => state.searchQuery);
   const setSearchQuery = useUIStore(state => state.setSearchQuery);
+  const searchResultsVisible = useUIStore(state => state.searchResultsVisible);
+  const setSearchResultsVisible = useUIStore(state => state.setSearchResultsVisible);
+  const clearSearch = useUIStore(state => state.clearSearch);
   
   const getCurrentProject = useProjectStore(state => state.getCurrentProject);
   const currentProject = getCurrentProject();
   
   const selectedIssueIds = useUIStore(state => state.selectedIssueIds);
-  const issues = useIssueStore(state => state.issues);
+  
+  const searchContainerRef = useRef<HTMLDivElement>(null);
   
   // Build breadcrumb items
   const breadcrumbItems = [
@@ -48,6 +55,57 @@ export function Header() {
       ),
     },
   ];
+  
+  // Handle search
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+    if (query.trim()) {
+      saveRecentSearch(query);
+      setSearchResultsVisible(true);
+    } else {
+      setSearchResultsVisible(false);
+    }
+  }, [setSearchQuery, setSearchResultsVisible]);
+  
+  // Handle closing search results
+  const handleCloseResults = useCallback(() => {
+    clearSearch();
+  }, [clearSearch]);
+  
+  // Handle selecting an issue from results
+  const handleSelectIssue = useCallback((issueId: string) => {
+    // Keep search open so user can continue exploring results
+    // The detail panel will open via the SearchResults component
+  }, []);
+  
+  // Close search results when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchContainerRef.current && 
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
+        setSearchResultsVisible(false);
+      }
+    };
+    
+    if (searchResultsVisible) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [searchResultsVisible, setSearchResultsVisible]);
+  
+  // Handle escape key to close results
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && searchResultsVisible) {
+        setSearchResultsVisible(false);
+      }
+    };
+    
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [searchResultsVisible, setSearchResultsVisible]);
 
   return (
     <header className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 flex-shrink-0">
@@ -80,35 +138,23 @@ export function Header() {
         )}
       </div>
 
-      {/* Center - Search bar */}
-      <div className="flex-1 max-w-md mx-4">
-        <div className="relative">
-          <svg 
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search issues (JQL)..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+      {/* Center - Search bar with results */}
+      <div ref={searchContainerRef} className="flex-1 max-w-xl mx-4 relative">
+        <SearchBar
+          value={searchQuery}
+          onChange={setSearchQuery}
+          onSearch={handleSearch}
+          placeholder="Search (JQL): type = Bug AND priority = High"
+        />
+        
+        {/* Search results dropdown */}
+        {searchResultsVisible && searchQuery.trim() && (
+          <SearchResults
+            query={searchQuery}
+            onClose={handleCloseResults}
+            onSelectIssue={handleSelectIssue}
           />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Right side - View toggle */}

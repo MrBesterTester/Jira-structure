@@ -15,11 +15,11 @@
 | 2 | State Management & Basic UI Shell | Complete | 3/3 |
 | 3 | Tree View Implementation | Complete | 3/3 |
 | 4 | Kanban Board Implementation | Complete | 3/3 |
-| 5 | Issue Management & Search | In Progress | 3/4 |
+| 5 | Issue Management & Search | Complete | 4/4 |
 | 6 | Bulk Operations, Import/Export & Polish | Not Started | 0/4 |
 | 7 | MCP Integration (Atlassian-Compatible) | Not Started | 0/3 |
 
-**Total Progress: 16/24 steps completed**
+**Total Progress: 17/24 steps completed**
 
 ---
 
@@ -188,13 +188,13 @@
 - [x] **TEST**: Can create issues at any level, validation works
 
 ### Step 5.4: Implement JQL-like Search
-- [ ] Create jqlParser.ts (query to AST)
-- [ ] Create jqlEvaluator.ts (evaluate against issues)
-- [ ] Create SearchBar.tsx with syntax highlighting
-- [ ] Add autocomplete suggestions
-- [ ] Create SearchResults.tsx
-- [ ] Save recent searches to localStorage
-- [ ] **TEST**: JQL syntax works, results accurate, handles invalid queries
+- [x] Create jqlParser.ts (query to AST)
+- [x] Create jqlEvaluator.ts (evaluate against issues)
+- [x] Create SearchBar.tsx with syntax highlighting
+- [x] Add autocomplete suggestions
+- [x] Create SearchResults.tsx
+- [x] Save recent searches to localStorage
+- [x] **TEST**: JQL syntax works, results accurate, handles invalid queries
 
 ---
 

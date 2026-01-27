@@ -15,3 +15,6 @@ export * from './Tree';
 
 // Kanban board components
 export * from './Kanban';
+
+// Search components
+export * from './Search';
