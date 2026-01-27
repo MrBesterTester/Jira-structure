@@ -24,7 +24,8 @@ import {
   type DragOverEvent,
 } from '@dnd-kit/core';
 import { useIssueStore, useUIStore, useUserStore } from '../../store';
-import { IssueStatus, Issue, FilterState, Priority, IssueType } from '../../types';
+import { IssueStatus, Issue, Priority, IssueType } from '../../types';
+import { filterIssues } from '../../utils';
 import { KanbanColumn } from './KanbanColumn';
 import { KanbanCard } from './KanbanCard';
 import { KanbanToolbar, GroupByOption } from './KanbanToolbar';
@@ -55,67 +56,6 @@ export const KANBAN_COLUMNS = [
 // ============================================================================
 // HELPERS
 // ============================================================================
-
-/**
- * Filter issues based on filter state
- */
-function filterIssues(issues: Issue[], filters: FilterState): Issue[] {
-  return issues.filter(issue => {
-    // Filter by types
-    if (filters.types.length > 0 && !filters.types.includes(issue.type)) {
-      return false;
-    }
-    
-    // Filter by statuses
-    if (filters.statuses.length > 0 && !filters.statuses.includes(issue.status)) {
-      return false;
-    }
-    
-    // Filter by priorities
-    if (filters.priorities.length > 0 && !filters.priorities.includes(issue.priority)) {
-      return false;
-    }
-    
-    // Filter by assignees
-    if (filters.assignees.length > 0) {
-      if (!issue.assignee || !filters.assignees.includes(issue.assignee)) {
-        return false;
-      }
-    }
-    
-    // Filter by sprints
-    if (filters.sprints.length > 0) {
-      if (!issue.sprint || !filters.sprints.includes(issue.sprint)) {
-        return false;
-      }
-    }
-    
-    // Filter by labels
-    if (filters.labels.length > 0) {
-      if (!filters.labels.some(label => issue.labels.includes(label))) {
-        return false;
-      }
-    }
-    
-    // Filter by parent
-    if (filters.parentId && issue.parentId !== filters.parentId) {
-      return false;
-    }
-    
-    // Filter by search text
-    if (filters.searchText) {
-      const searchLower = filters.searchText.toLowerCase();
-      const matchesTitle = issue.title.toLowerCase().includes(searchLower);
-      const matchesKey = issue.key.toLowerCase().includes(searchLower);
-      const matchesDescription = issue.description.toLowerCase().includes(searchLower);
-      if (!matchesTitle && !matchesKey && !matchesDescription) {
-        return false;
-      }
-    }
-    
-    return true;
-  });
-}
 
 /**
  * Group issues by status for columns

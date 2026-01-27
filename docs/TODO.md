@@ -16,10 +16,10 @@
 | 3 | Tree View Implementation | Complete | 3/3 |
 | 4 | Kanban Board Implementation | Complete | 3/3 |
 | 5 | Issue Management & Search | Complete | 4/4 |
-| 6 | Bulk Operations, Import/Export & Polish | In Progress | 2/4 |
+| 6 | Bulk Operations, Import/Export & Polish | In Progress | 3/4 |
 | 7 | MCP Integration (Atlassian-Compatible) | Not Started | 0/3 |
 
-**Total Progress: 19/24 steps completed**
+**Total Progress: 20/24 steps completed**
 
 ---
 
@@ -221,13 +221,13 @@
 - [x] **TEST**: Export produces valid files, import restores correctly
 
 ### Step 6.3: Add Filtering UI
-- [ ] Create FilterPanel.tsx
-- [ ] Create filter components for each field type
-- [ ] Update UIStore with filter state
-- [ ] Create filterIssues.ts utility
-- [ ] Create SavedFilters.tsx
-- [ ] Apply filters to Tree and Kanban views
-- [ ] **TEST**: Filters work correctly, can combine multiple filters
+- [x] Create FilterPanel.tsx
+- [x] Create filter components for each field type
+- [x] Update UIStore with filter state
+- [x] Create filterIssues.ts utility
+- [x] Create SavedFilters.tsx
+- [x] Apply filters to Tree and Kanban views
+- [x] **TEST**: Filters work correctly, can combine multiple filters
 
 ### Step 6.4: Final Polish & Build Setup
 - [ ] Update package.json scripts (dev, build, start, preview, package)

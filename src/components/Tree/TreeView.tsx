@@ -27,7 +27,7 @@ import {
 import type { Issue, SortConfig } from '../../types';
 import { IssueType, Priority, IssueStatus } from '../../types';
 import { useIssueStore, useUIStore } from '../../store';
-import { validateMove } from '../../utils';
+import { validateMove, filterIssues, hasActiveFilters } from '../../utils';
 import { TreeNode } from './TreeNode';
 import { TreeToolbar } from './TreeToolbar';
 import { RelationshipLines } from './RelationshipLines';
@@ -167,17 +167,40 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
     return issues.filter(issue => issue.parentId === null);
   }, [issues]);
 
-  // Apply type filters
-  const filteredRootIssues = useMemo(() => {
-    let filtered = rootIssues;
-    
-    // Filter by type if types are specified
-    if (filters.types.length > 0) {
-      filtered = filtered.filter(issue => filters.types.includes(issue.type));
+  // Build set of visible issue IDs when filters are active
+  // Includes matching issues AND their ancestor chain for hierarchy context
+  const visibleIssueIdsSet = useMemo(() => {
+    if (!hasActiveFilters(filters)) {
+      return null; // No filtering - show all
     }
     
-    return filtered;
-  }, [rootIssues, filters.types]);
+    const visibleIds = new Set<string>();
+    const matchingIssues = filterIssues(issues, filters);
+    
+    // Add all matching issues
+    matchingIssues.forEach(issue => visibleIds.add(issue.id));
+    
+    // Add ancestor chain for each matching issue to preserve hierarchy context
+    const issueMap = new Map(issues.map(i => [i.id, i]));
+    matchingIssues.forEach(issue => {
+      let currentId = issue.parentId;
+      while (currentId) {
+        visibleIds.add(currentId);
+        const parent = issueMap.get(currentId);
+        currentId = parent?.parentId ?? null;
+      }
+    });
+    
+    return visibleIds;
+  }, [issues, filters]);
+
+  // Apply filters to root issues
+  const filteredRootIssues = useMemo(() => {
+    if (!visibleIssueIdsSet) {
+      return rootIssues; // No filters - show all root issues
+    }
+    return rootIssues.filter(issue => visibleIssueIdsSet.has(issue.id));
+  }, [rootIssues, visibleIssueIdsSet]);
 
   // Apply sorting
   const sortedRootIssues = useMemo(() => {
@@ -189,8 +212,8 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
     const ids: string[] = [];
     
     const addIssueAndChildren = (issue: Issue) => {
-      // Apply type filter
-      if (filters.types.length > 0 && !filters.types.includes(issue.type)) {
+      // Apply filter
+      if (visibleIssueIdsSet && !visibleIssueIdsSet.has(issue.id)) {
         return;
       }
       
@@ -198,7 +221,10 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
       
       if (expandedIds.has(issue.id)) {
         const children = getIssuesByParentId(issue.id);
-        const sortedChildren = sortIssues(children, sortConfig);
+        const filteredChildren = visibleIssueIdsSet 
+          ? children.filter(c => visibleIssueIdsSet.has(c.id))
+          : children;
+        const sortedChildren = sortIssues(filteredChildren, sortConfig);
         sortedChildren.forEach(addIssueAndChildren);
       }
     };
@@ -206,20 +232,20 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
     sortedRootIssues.forEach(addIssueAndChildren);
     
     return ids;
-  }, [sortedRootIssues, expandedIds, getIssuesByParentId, sortConfig, filters.types]);
+  }, [sortedRootIssues, expandedIds, getIssuesByParentId, sortConfig, visibleIssueIdsSet]);
 
   // Get children for an issue (with filtering and sorting applied)
   const getChildrenForIssue = useCallback((issueId: string): Issue[] => {
     let children = getIssuesByParentId(issueId);
     
-    // Apply type filter
-    if (filters.types.length > 0) {
-      children = children.filter(issue => filters.types.includes(issue.type));
+    // Apply filter
+    if (visibleIssueIdsSet) {
+      children = children.filter(issue => visibleIssueIdsSet.has(issue.id));
     }
     
     // Apply sorting
     return sortIssues(children, sortConfig);
-  }, [getIssuesByParentId, filters.types, sortConfig]);
+  }, [getIssuesByParentId, visibleIssueIdsSet, sortConfig]);
 
   // Get all issue IDs with children (for expand all)
   const getAllParentIds = useMemo(() => {

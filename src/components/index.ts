@@ -24,3 +24,6 @@ export * from './BulkActions';
 
 // Import/Export components
 export * from './ImportExport';
+
+// Filter components
+export * from './Filters';

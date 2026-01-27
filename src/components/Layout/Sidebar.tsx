@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import { useUIStore, useProjectStore, useSprintStore } from '../../store';
 import { ExportModal, ImportModal } from '../ImportExport';
+import { FilterPanel } from '../Filters';
 
 // Navigation item type
 interface NavItem {
@@ -35,7 +36,6 @@ export function Sidebar() {
   
   const getActiveSprint = useSprintStore(state => state.getActiveSprint);
   
-  const [filtersExpanded, setFiltersExpanded] = useState(true);
   const [dataExpanded, setDataExpanded] = useState(true);
 
   const currentProject = getCurrentProject();
@@ -149,30 +149,8 @@ export function Sidebar() {
 
         {/* Filters Section */}
         {!sidebarCollapsed && (
-          <div className="mt-6">
-            <button
-              onClick={() => setFiltersExpanded(!filtersExpanded)}
-              className="w-full flex items-center justify-between px-1 py-1.5 text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700"
-            >
-              <span>Filters</span>
-              <svg 
-                className={`w-4 h-4 transition-transform ${filtersExpanded ? 'rotate-180' : ''}`} 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            
-            {filtersExpanded && (
-              <div className="mt-2 space-y-2 pl-1">
-                <FilterItem label="My Issues" />
-                <FilterItem label="Recently Updated" />
-                <FilterItem label="High Priority" />
-                <FilterItem label="Unassigned" />
-              </div>
-            )}
+          <div className="mt-4">
+            <FilterPanel collapsed={false} />
           </div>
         )}
 
@@ -265,24 +243,5 @@ export function Sidebar() {
       {/* Export Modal */}
       {exportModalOpen && <ExportModal onClose={closeExportModal} />}
     </aside>
-  );
-}
-
-// Filter item component
-interface FilterItemProps {
-  label: string;
-  count?: number;
-}
-
-function FilterItem({ label, count }: FilterItemProps) {
-  return (
-    <button className="w-full flex items-center justify-between px-2 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-md transition-colors">
-      <span>{label}</span>
-      {count !== undefined && (
-        <span className="text-xs bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded-full">
-          {count}
-        </span>
-      )}
-    </button>
   );
 }
