@@ -305,9 +305,9 @@
 > **Goal**: Publish to GitHub and create distributable package for sharing.
 
 ### Step 8.1: Prepare for GitHub Publishing
-- [ ] Add `jira-structure.zip` to .gitignore (exclude built package from repo)
-- [ ] Create LICENSE file (MIT recommended for learning tools)
-- [ ] Review README.md for any sensitive paths or personal info
+- [x] Add `jira-structure.zip` to .gitignore (exclude built package from repo)
+- [x] Create LICENSE file (MIT recommended for learning tools)
+- [x] Review README.md for any sensitive paths or personal info
 - [ ] Create GitHub repository at https://github.com/new (name: `jira-structure`)
 - [ ] Push code to GitHub:
   ```bash

@@ -28,6 +28,9 @@ ENV/
 dist/
 dist-server/
 build/
+
+# Distribution package (created by npm run package)
+jira-structure.zip
 *.zip
 *.pyc
 __pycache__/
