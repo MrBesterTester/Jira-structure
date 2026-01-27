@@ -18,8 +18,9 @@
 | 5 | Issue Management & Search | Complete | 4/4 |
 | 6 | Bulk Operations, Import/Export & Polish | Complete | 4/4 |
 | 7 | MCP Integration (Atlassian-Compatible) | In Progress | 2/3 |
+| 8 | Release | Not Started | 0/2 |
 
-**Total Progress: 23/24 steps completed**
+**Total Progress: 23/26 steps completed**
 
 ---
 
@@ -298,6 +299,32 @@
 
 ---
 
+## Phase 8: Release
+
+> **Goal**: Publish to GitHub and create distributable package for sharing.
+
+### Step 8.1: Prepare for GitHub Publishing
+- [ ] Add `jira-structure.zip` to .gitignore (exclude built package from repo)
+- [ ] Create LICENSE file (MIT recommended for learning tools)
+- [ ] Review README.md for any sensitive paths or personal info
+- [ ] Create GitHub repository
+- [ ] Push code to GitHub
+- [ ] **TEST**: Repository is public and accessible
+
+### Step 8.2: Create Release Package
+- [ ] Run `npm run package` to create jira-structure.zip
+- [ ] Verify zip contents include dist/, dist-server/, data/, START-HERE scripts
+- [ ] Test zip on fresh machine (or fresh folder):
+  - [ ] Unzip
+  - [ ] Double-click START-HERE
+  - [ ] Web app works
+  - [ ] MCP server path is correct
+- [ ] Create GitHub Release with zip attached
+- [ ] Share download link with friend
+- [ ] **TEST**: Friend can download, unzip, and run successfully
+
+---
+
 ## Notes & Lessons Learned
 
 > Add lessons learned during development here to prevent future mistakes.
@@ -325,3 +352,4 @@
 | 1.0 | 2026-01-26 | Claude (Opus 4.5) | Initial to-dos from blueprint |
 | 1.1 | 2026-01-27 | Claude (Opus 4.5) | Updated Phase 7 for Atlassian MCP compatibility (3 steps) |
 | 1.2 | 2026-01-27 | Claude (Opus 4.5) | Completed Step 5.1, added Lesson 1 (UI testing) |
+| 1.3 | 2026-01-27 | Claude (Opus 4.5) | Completed Step 7.2, added Phase 8: Release (2 steps) |
