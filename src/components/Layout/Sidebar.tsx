@@ -2,11 +2,12 @@
  * Sidebar - Navigation and filters sidebar
  * 
  * Contains project selector, navigation links, filters section,
- * and create issue button.
+ * import/export actions, and create issue button.
  */
 
 import { useState } from 'react';
 import { useUIStore, useProjectStore, useSprintStore } from '../../store';
+import { ExportModal, ImportModal } from '../ImportExport';
 
 // Navigation item type
 interface NavItem {
@@ -20,6 +21,12 @@ export function Sidebar() {
   const sidebarCollapsed = useUIStore(state => state.sidebarCollapsed);
   const toggleSidebar = useUIStore(state => state.toggleSidebar);
   const openCreateIssueModal = useUIStore(state => state.openCreateIssueModal);
+  const importModalOpen = useUIStore(state => state.importModalOpen);
+  const exportModalOpen = useUIStore(state => state.exportModalOpen);
+  const openImportModal = useUIStore(state => state.openImportModal);
+  const closeImportModal = useUIStore(state => state.closeImportModal);
+  const openExportModal = useUIStore(state => state.openExportModal);
+  const closeExportModal = useUIStore(state => state.closeExportModal);
   
   const projects = useProjectStore(state => state.projects);
   const currentProjectId = useProjectStore(state => state.currentProjectId);
@@ -29,6 +36,7 @@ export function Sidebar() {
   const getActiveSprint = useSprintStore(state => state.getActiveSprint);
   
   const [filtersExpanded, setFiltersExpanded] = useState(true);
+  const [dataExpanded, setDataExpanded] = useState(true);
 
   const currentProject = getCurrentProject();
   const activeSprint = getActiveSprint();
@@ -167,10 +175,76 @@ export function Sidebar() {
             )}
           </div>
         )}
+
+        {/* Data Section (Import/Export) */}
+        {!sidebarCollapsed && (
+          <div className="mt-6">
+            <button
+              onClick={() => setDataExpanded(!dataExpanded)}
+              className="w-full flex items-center justify-between px-1 py-1.5 text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700"
+            >
+              <span>Data</span>
+              <svg 
+                className={`w-4 h-4 transition-transform ${dataExpanded ? 'rotate-180' : ''}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {dataExpanded && (
+              <div className="mt-2 space-y-2 pl-1">
+                <button
+                  onClick={openImportModal}
+                  className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  </svg>
+                  <span>Import</span>
+                </button>
+                <button
+                  onClick={openExportModal}
+                  className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  <span>Export</span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </nav>
 
       {/* Create Issue Button */}
       <div className={`border-t border-gray-200 ${sidebarCollapsed ? 'p-2' : 'p-3'}`}>
+        {/* Import/Export buttons when collapsed */}
+        {sidebarCollapsed && (
+          <div className="flex flex-col gap-2 mb-2">
+            <button
+              onClick={openImportModal}
+              className="w-full p-2.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-center"
+              title="Import"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+            </button>
+            <button
+              onClick={openExportModal}
+              className="w-full p-2.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-center"
+              title="Export"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </button>
+          </div>
+        )}
         <button
           onClick={() => openCreateIssueModal(null)}
           className={`w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors ${
@@ -184,6 +258,12 @@ export function Sidebar() {
           {!sidebarCollapsed && <span className="text-sm">Create Issue</span>}
         </button>
       </div>
+
+      {/* Import Modal */}
+      {importModalOpen && <ImportModal onClose={closeImportModal} />}
+      
+      {/* Export Modal */}
+      {exportModalOpen && <ExportModal onClose={closeExportModal} />}
     </aside>
   );
 }

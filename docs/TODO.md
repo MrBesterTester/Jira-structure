@@ -16,10 +16,10 @@
 | 3 | Tree View Implementation | Complete | 3/3 |
 | 4 | Kanban Board Implementation | Complete | 3/3 |
 | 5 | Issue Management & Search | Complete | 4/4 |
-| 6 | Bulk Operations, Import/Export & Polish | In Progress | 1/4 |
+| 6 | Bulk Operations, Import/Export & Polish | In Progress | 2/4 |
 | 7 | MCP Integration (Atlassian-Compatible) | Not Started | 0/3 |
 
-**Total Progress: 18/24 steps completed**
+**Total Progress: 19/24 steps completed**
 
 ---
 
@@ -212,13 +212,13 @@
 - [x] **TEST**: Can select multiple, bulk actions update all selected
 
 ### Step 6.2: Implement Import/Export
-- [ ] Create exportData.ts (JSON and CSV)
-- [ ] Create importData.ts (parse and validate)
-- [ ] Create ExportModal.tsx with format selection
-- [ ] Create ImportModal.tsx with file upload
-- [ ] Add conflict handling options
-- [ ] Add import progress and results summary
-- [ ] **TEST**: Export produces valid files, import restores correctly
+- [x] Create exportData.ts (JSON and CSV)
+- [x] Create importData.ts (parse and validate)
+- [x] Create ExportModal.tsx with format selection
+- [x] Create ImportModal.tsx with file upload
+- [x] Add conflict handling options
+- [x] Add import progress and results summary
+- [x] **TEST**: Export produces valid files, import restores correctly
 
 ### Step 6.3: Add Filtering UI
 - [ ] Create FilterPanel.tsx

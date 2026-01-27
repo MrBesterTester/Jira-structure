@@ -40,6 +40,8 @@ interface UIState {
   createIssueModalOpen: boolean;
   createIssueParentId: string | null;
   createIssueDefaultStatus: string | null;
+  importModalOpen: boolean;
+  exportModalOpen: boolean;
   
   // Search
   searchQuery: string;
@@ -83,6 +85,10 @@ interface UIState {
   // Actions - Modals
   openCreateIssueModal: (parentId?: string | null, defaultStatus?: string | null) => void;
   closeCreateIssueModal: () => void;
+  openImportModal: () => void;
+  closeImportModal: () => void;
+  openExportModal: () => void;
+  closeExportModal: () => void;
   
   // Actions - Search
   setSearchQuery: (query: string) => void;
@@ -121,6 +127,8 @@ export const useUIStore = create<UIState>((set, get) => ({
   createIssueModalOpen: false,
   createIssueParentId: null,
   createIssueDefaultStatus: null,
+  importModalOpen: false,
+  exportModalOpen: false,
   
   // Initial state - Search
   searchQuery: '',
@@ -307,6 +315,22 @@ export const useUIStore = create<UIState>((set, get) => ({
       createIssueParentId: null,
       createIssueDefaultStatus: null,
     });
+  },
+
+  openImportModal: () => {
+    set({ importModalOpen: true });
+  },
+
+  closeImportModal: () => {
+    set({ importModalOpen: false });
+  },
+
+  openExportModal: () => {
+    set({ exportModalOpen: true });
+  },
+
+  closeExportModal: () => {
+    set({ exportModalOpen: false });
   },
 
   // ============================================================================

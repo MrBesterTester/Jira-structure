@@ -21,3 +21,6 @@ export * from './Search';
 
 // Bulk action components
 export * from './BulkActions';
+
+// Import/Export components
+export * from './ImportExport';
