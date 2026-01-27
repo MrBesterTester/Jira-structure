@@ -12,6 +12,6 @@
     "sourceMap": false,
     "resolveJsonModule": true
   },
-  "include": ["src/server/**/*"],
+  "include": ["src/server/**/*", "src/mcp/**/*"],
   "exclude": ["node_modules", "dist", "dist-server"]
 }
