@@ -12,3 +12,6 @@ export * from './Issue';
 
 // Tree view components
 export * from './Tree';
+
+// Kanban board components
+export * from './Kanban';
