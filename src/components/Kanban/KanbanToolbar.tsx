@@ -21,7 +21,9 @@ export type GroupByOption = 'none' | 'assignee' | 'priority' | 'epic';
 export interface KanbanToolbarProps {
   /** Total count of visible issues */
   totalCount: number;
-  /** Callback when group by changes - will be used in Step 4.3 */
+  /** Current groupBy value (controlled from parent) */
+  groupBy?: GroupByOption;
+  /** Callback when group by changes */
   onGroupByChange?: (groupBy: GroupByOption) => void;
   /** Additional class names */
   className?: string;
@@ -104,6 +106,7 @@ const Dropdown = memo(function Dropdown({ label, value, options, onChange, class
 
 export const KanbanToolbar = memo(function KanbanToolbar({
   totalCount,
+  groupBy = 'none',
   onGroupByChange,
   className = '',
 }: KanbanToolbarProps) {
@@ -113,9 +116,6 @@ export const KanbanToolbar = memo(function KanbanToolbar({
   const clearFilters = useUIStore(state => state.clearFilters);
   const users = useUserStore(state => state.users);
   const issues = useIssueStore(state => state.issues);
-
-  // Local state for group by (will be lifted to KanbanBoard in Step 4.3)
-  const [groupBy, setGroupBy] = useState<GroupByOption>('none');
 
   // Get epics for filtering
   const epics = issues.filter(i => i.type === IssueType.Epic);
@@ -169,7 +169,6 @@ export const KanbanToolbar = memo(function KanbanToolbar({
   // Handle group by change
   const handleGroupByChange = (value: string) => {
     const newGroupBy = value as GroupByOption;
-    setGroupBy(newGroupBy);
     onGroupByChange?.(newGroupBy);
   };
 

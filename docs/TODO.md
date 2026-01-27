@@ -14,12 +14,12 @@
 | 1 | Project Setup & Core Data Layer | Complete | 4/4 |
 | 2 | State Management & Basic UI Shell | Complete | 3/3 |
 | 3 | Tree View Implementation | Complete | 3/3 |
-| 4 | Kanban Board Implementation | In Progress | 2/3 |
+| 4 | Kanban Board Implementation | Complete | 3/3 |
 | 5 | Issue Management & Search | Not Started | 0/4 |
 | 6 | Bulk Operations, Import/Export & Polish | Not Started | 0/4 |
 | 7 | MCP Integration (Atlassian-Compatible) | Not Started | 0/3 |
 
-**Total Progress: 12/24 steps completed**
+**Total Progress: 13/24 steps completed**
 
 ---
 
@@ -148,12 +148,12 @@
 - [x] **TEST**: Can drag cards between columns, status updates, data persists
 
 ### Step 4.3: Add Swimlanes (Grouping)
-- [ ] Add groupBy state to KanbanBoard
-- [ ] Create KanbanSwimlane.tsx
-- [ ] Update KanbanToolbar with group dropdown
-- [ ] Implement collapsible swimlane headers
-- [ ] Handle cross-swimlane drag (update grouped field)
-- [ ] **TEST**: Can group by assignee/epic, swimlanes display correctly
+- [x] Add groupBy state to KanbanBoard
+- [x] Create KanbanSwimlane.tsx
+- [x] Update KanbanToolbar with group dropdown
+- [x] Implement collapsible swimlane headers
+- [x] Handle cross-swimlane drag (update grouped field)
+- [x] **TEST**: Can group by assignee/epic, swimlanes display correctly
 
 ---
 
