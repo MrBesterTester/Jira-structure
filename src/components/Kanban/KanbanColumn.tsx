@@ -5,10 +5,12 @@
  * - Header with status name, count, and color indicator
  * - Scrollable card container
  * - Empty state when no issues
- * - Droppable zone (prepared for Phase 4.2 drag-and-drop)
+ * - Droppable zone for drag-and-drop status changes
+ * - Visual feedback when cards are dragged over
  */
 
 import { memo } from 'react';
+import { useDroppable } from '@dnd-kit/core';
 import { IssueStatus, Issue } from '../../types';
 import { KanbanCard } from './KanbanCard';
 
@@ -27,6 +29,10 @@ export interface KanbanColumnProps {
   headerBg: string;
   /** Issues to display in this column */
   issues: Issue[];
+  /** ID of the currently dragging card (to dim it in source column) */
+  draggingId?: string | null;
+  /** Whether this column is the current drop target */
+  isDropTarget?: boolean;
   /** Callback when an issue card is clicked */
   onIssueClick?: (issue: Issue) => void;
   /** Callback when an issue card is double-clicked */
@@ -45,22 +51,35 @@ export const KanbanColumn = memo(function KanbanColumn({
   color,
   headerBg,
   issues,
+  draggingId,
+  isDropTarget = false,
   onIssueClick,
   onIssueDoubleClick,
   className = '',
 }: KanbanColumnProps) {
+  // Make column droppable
+  const { setNodeRef, isOver } = useDroppable({
+    id: status, // Use status as the droppable ID
+  });
+
+  // Determine if column should be highlighted
+  const showDropHighlight = isDropTarget || isOver;
+
   return (
     <div 
+      ref={setNodeRef}
       className={`
         flex-shrink-0 w-72 flex flex-col 
         bg-gray-100 rounded-lg 
         max-h-full
+        transition-all duration-200
+        ${showDropHighlight ? 'ring-2 ring-blue-400 ring-offset-2 bg-blue-50' : ''}
         ${className}
       `.trim()}
       data-status={status}
     >
       {/* Column header */}
-      <div className={`p-3 rounded-t-lg ${headerBg}`}>
+      <div className={`p-3 rounded-t-lg transition-colors duration-200 ${showDropHighlight ? 'bg-blue-100' : headerBg}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {/* Status color dot */}
@@ -90,18 +109,23 @@ export const KanbanColumn = memo(function KanbanColumn({
       </div>
 
       {/* Scrollable card container */}
-      <div className="flex-1 overflow-y-auto p-2 pt-1 space-y-2 min-h-[100px]">
+      <div className={`
+        flex-1 overflow-y-auto p-2 pt-1 space-y-2 min-h-[100px]
+        transition-colors duration-200
+        ${showDropHighlight ? 'bg-blue-50/50' : ''}
+      `}>
         {issues.length > 0 ? (
           issues.map(issue => (
             <KanbanCard
               key={issue.id}
               issue={issue}
+              isDraggedAway={draggingId === issue.id}
               {...(onIssueClick && { onClick: onIssueClick })}
               {...(onIssueDoubleClick && { onDoubleClick: onIssueDoubleClick })}
             />
           ))
         ) : (
-          <EmptyColumnState status={status} />
+          <EmptyColumnState status={status} showDropHint={showDropHighlight} />
         )}
       </div>
     </div>
@@ -114,11 +138,16 @@ export const KanbanColumn = memo(function KanbanColumn({
 
 interface EmptyColumnStateProps {
   status: IssueStatus;
+  showDropHint?: boolean;
 }
 
-function EmptyColumnState({ status }: EmptyColumnStateProps) {
+function EmptyColumnState({ status, showDropHint = false }: EmptyColumnStateProps) {
   // Different messages based on status
   const getMessage = () => {
+    if (showDropHint) {
+      return "Drop here to move";
+    }
+    
     switch (status) {
       case IssueStatus.Todo:
         return "No issues waiting to be started";
@@ -134,13 +163,30 @@ function EmptyColumnState({ status }: EmptyColumnStateProps) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-8 px-4">
-      <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center mb-2 shadow-sm">
-        <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+    <div className={`
+      flex flex-col items-center justify-center py-8 px-4
+      transition-all duration-200
+      ${showDropHint ? 'py-12' : ''}
+    `}>
+      <div className={`
+        w-10 h-10 rounded-lg flex items-center justify-center mb-2 shadow-sm
+        transition-all duration-200
+        ${showDropHint ? 'bg-blue-100 border-2 border-dashed border-blue-300' : 'bg-white'}
+      `}>
+        <svg 
+          className={`w-5 h-5 transition-colors duration-200 ${showDropHint ? 'text-blue-400' : 'text-gray-300'}`} 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          {showDropHint ? (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          ) : (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          )}
         </svg>
       </div>
-      <p className="text-xs text-gray-400 text-center">
+      <p className={`text-xs text-center transition-colors duration-200 ${showDropHint ? 'text-blue-500 font-medium' : 'text-gray-400'}`}>
         {getMessage()}
       </p>
     </div>

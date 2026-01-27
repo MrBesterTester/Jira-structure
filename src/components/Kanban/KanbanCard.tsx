@@ -1,5 +1,5 @@
 /**
- * KanbanCard - Card component for Kanban board display
+ * KanbanCard - Card component for Kanban board display with drag-and-drop
  * 
  * Features:
  * - Compact card layout optimized for Kanban columns
@@ -7,10 +7,12 @@
  * - Parent breadcrumb (if has parent)
  * - Story points badge
  * - Selection state with visual feedback
- * - Prepared for drag-and-drop (Phase 4.2)
+ * - Draggable for status changes via drag-and-drop
  */
 
 import { memo } from 'react';
+import { useDraggable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 import type { Issue } from '../../types';
 import { useUIStore, useUserStore, useIssueStore } from '../../store';
 import { IssueTypeIcon } from '../Issue/IssueTypeIcon';
@@ -28,8 +30,10 @@ export interface KanbanCardProps {
   onClick?: (issue: Issue) => void;
   /** Callback when card is double-clicked */
   onDoubleClick?: (issue: Issue) => void;
-  /** Whether the card is being dragged (for Phase 4.2) */
+  /** Whether this card is currently being dragged (used by DragOverlay) */
   isDragging?: boolean;
+  /** Whether this card has been dragged away from its column (dim the original) */
+  isDraggedAway?: boolean;
   /** Additional class names */
   className?: string;
 }
@@ -43,6 +47,7 @@ export const KanbanCard = memo(function KanbanCard({
   onClick,
   onDoubleClick,
   isDragging = false,
+  isDraggedAway = false,
   className = '',
 }: KanbanCardProps) {
   // Store hooks
@@ -50,6 +55,32 @@ export const KanbanCard = memo(function KanbanCard({
   const focusedIssueId = useUIStore(state => state.focusedIssueId);
   const getUserById = useUserStore(state => state.getUserById);
   const getIssueById = useIssueStore(state => state.getIssueById);
+  
+  // Make card draggable
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    isDragging: isCurrentlyDragging,
+  } = useDraggable({
+    id: issue.id,
+  });
+
+  // Create modified listeners that prevent event propagation during drag
+  const modifiedListeners = listeners ? {
+    ...listeners,
+    onPointerDown: (e: React.PointerEvent) => {
+      e.stopPropagation();
+      listeners.onPointerDown?.(e as unknown as PointerEvent);
+    },
+  } : undefined;
+
+  // Apply transform style during drag
+  const style: React.CSSProperties = {
+    ...(transform ? { transform: CSS.Translate.toString(transform) } : {}),
+    touchAction: 'none', // Prevent default touch behaviors during drag
+  };
   
   // Derived state
   const isSelected = selectedIssueIds.includes(issue.id);
@@ -75,26 +106,33 @@ export const KanbanCard = memo(function KanbanCard({
     }
   };
 
+  // Determine visual state
+  const showDragStyles = isDragging || isCurrentlyDragging;
+  const showDimmed = isDraggedAway;
+
   return (
     <div
+      ref={setNodeRef}
+      style={style}
       className={`
         bg-white rounded-lg border shadow-sm
-        transition-all cursor-pointer
+        transition-all duration-200 cursor-grab active:cursor-grabbing
         ${isSelected 
           ? 'border-blue-300 ring-1 ring-blue-200 shadow-md' 
           : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
         }
         ${isFocused ? 'ring-2 ring-blue-400' : ''}
-        ${isDragging ? 'opacity-50 rotate-2 scale-105' : ''}
+        ${showDragStyles ? 'shadow-xl z-50 rotate-2 scale-105' : ''}
+        ${showDimmed ? 'opacity-40 scale-95' : ''}
         ${className}
       `.trim()}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
       onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
       aria-selected={isSelected}
       data-issue-id={issue.id}
+      {...attributes}
+      {...modifiedListeners}
     >
       {/* Card content */}
       <div className="p-3">

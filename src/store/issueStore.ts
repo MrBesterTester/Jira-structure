@@ -24,6 +24,7 @@ interface IssueState {
   fetchIssues: () => Promise<void>;
   createIssue: (issue: Omit<Issue, 'id' | 'key' | 'createdAt' | 'updatedAt' | 'childIds'>, projectKey: string) => Promise<Issue | null>;
   updateIssue: (update: UpdateIssueInput) => Promise<boolean>;
+  updateIssueStatus: (issueId: string, newStatus: IssueStatus) => Promise<boolean>;
   deleteIssue: (issueId: string) => Promise<boolean>;
   bulkUpdateIssues: (issueIds: string[], updates: Partial<Issue>) => Promise<boolean>;
   bulkDeleteIssues: (issueIds: string[]) => Promise<boolean>;
@@ -143,6 +144,45 @@ export const useIssueStore = create<IssueState>((set, get) => ({
     if (!success) {
       // Rollback on failure
       set({ issues: state.issues, error: 'Failed to update issue' });
+      return false;
+    }
+    
+    return true;
+  },
+
+  /**
+   * Update an issue's status (optimized for Kanban drag-and-drop)
+   */
+  updateIssueStatus: async (issueId, newStatus) => {
+    const state = get();
+    const now = new Date().toISOString();
+    
+    const existingIssue = state.issues.find(i => i.id === issueId);
+    if (!existingIssue) {
+      set({ error: `Issue ${issueId} not found` });
+      return false;
+    }
+
+    // Don't update if status is the same
+    if (existingIssue.status === newStatus) {
+      return true;
+    }
+
+    const updatedIssues = state.issues.map(issue =>
+      issue.id === issueId
+        ? { ...issue, status: newStatus, updatedAt: now }
+        : issue
+    );
+
+    // Optimistic update
+    set({ issues: updatedIssues, error: null });
+    
+    // Sync to API
+    const success = await state._syncToApi(updatedIssues);
+    
+    if (!success) {
+      // Rollback on failure
+      set({ issues: state.issues, error: 'Failed to update issue status' });
       return false;
     }
     

@@ -1,18 +1,31 @@
 /**
- * KanbanBoard - Main Kanban board container
+ * KanbanBoard - Main Kanban board container with drag-and-drop
  * 
  * Features:
  * - Horizontal scrollable layout with status columns
  * - Groups issues by status (To Do, In Progress, In Review, Done)
+ * - Drag-and-drop cards between columns to change status
  * - Column headers with issue counts
  * - Empty and loading states
  * - Integration with issue store and UI store
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
+import {
+  DndContext,
+  DragOverlay,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  closestCenter,
+  type DragStartEvent,
+  type DragEndEvent,
+  type DragOverEvent,
+} from '@dnd-kit/core';
 import { useIssueStore, useUIStore } from '../../store';
 import { IssueStatus, Issue, FilterState } from '../../types';
 import { KanbanColumn } from './KanbanColumn';
+import { KanbanCard } from './KanbanCard';
 import { KanbanToolbar } from './KanbanToolbar';
 
 // ============================================================================
@@ -137,9 +150,15 @@ export function KanbanBoard({ className = '' }: KanbanBoardProps) {
   // Store hooks
   const issues = useIssueStore(state => state.issues);
   const loading = useIssueStore(state => state.loading);
+  const updateIssueStatus = useIssueStore(state => state.updateIssueStatus);
   const filters = useUIStore(state => state.filters);
   const openDetailPanel = useUIStore(state => state.openDetailPanel);
   const toggleIssueSelection = useUIStore(state => state.toggleIssueSelection);
+
+  // Drag-and-drop state
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dragOverColumnId, setDragOverColumnId] = useState<IssueStatus | null>(null);
+  const [draggedIssue, setDraggedIssue] = useState<Issue | null>(null);
 
   // Local state for toolbar - will be expanded in Step 4.3 for swimlanes
   // For now, groupBy is managed in toolbar but not used for swimlanes yet
@@ -153,6 +172,96 @@ export function KanbanBoard({ className = '' }: KanbanBoardProps) {
       totalCount: filtered.length,
     };
   }, [issues, filters]);
+
+  // ============================================================================
+  // DRAG AND DROP SENSORS
+  // ============================================================================
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px movement before drag starts
+      },
+    })
+  );
+
+  // ============================================================================
+  // DRAG HANDLERS
+  // ============================================================================
+
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    const { active } = event;
+    const issue = issues.find(i => i.id === active.id);
+    
+    if (issue) {
+      setDraggingId(active.id as string);
+      setDraggedIssue(issue);
+    }
+  }, [issues]);
+
+  const handleDragOver = useCallback((event: DragOverEvent) => {
+    const { over } = event;
+    
+    if (over) {
+      // Check if we're over a column (column IDs are status values)
+      const overId = over.id as string;
+      if (Object.values(IssueStatus).includes(overId as IssueStatus)) {
+        setDragOverColumnId(overId as IssueStatus);
+      } else {
+        // We're over a card - find its column
+        const overIssue = issues.find(i => i.id === overId);
+        if (overIssue) {
+          setDragOverColumnId(overIssue.status);
+        }
+      }
+    } else {
+      setDragOverColumnId(null);
+    }
+  }, [issues]);
+
+  const handleDragEnd = useCallback(async (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    // Reset drag state
+    setDraggingId(null);
+    setDragOverColumnId(null);
+    setDraggedIssue(null);
+    
+    if (!over) {
+      return;
+    }
+
+    const draggedId = active.id as string;
+    const overId = over.id as string;
+    
+    // Find the dragged issue
+    const draggedIssueData = issues.find(i => i.id === draggedId);
+    if (!draggedIssueData) return;
+
+    // Determine target status
+    let targetStatus: IssueStatus;
+    
+    // Check if dropped on a column directly
+    if (Object.values(IssueStatus).includes(overId as IssueStatus)) {
+      targetStatus = overId as IssueStatus;
+    } else {
+      // Dropped on another card - use that card's status
+      const overIssue = issues.find(i => i.id === overId);
+      if (!overIssue) return;
+      targetStatus = overIssue.status;
+    }
+
+    // Only update if status is changing
+    if (draggedIssueData.status !== targetStatus) {
+      await updateIssueStatus(draggedId, targetStatus);
+    }
+  }, [issues, updateIssueStatus]);
+
+  const handleDragCancel = useCallback(() => {
+    setDraggingId(null);
+    setDragOverColumnId(null);
+    setDraggedIssue(null);
+  }, []);
 
   // Event handlers
   const handleIssueClick = (issue: Issue) => {
@@ -200,25 +309,53 @@ export function KanbanBoard({ className = '' }: KanbanBoardProps) {
         className="px-4 pt-4"
       />
 
-      {/* Kanban columns */}
-      <div className="flex-1 flex gap-4 overflow-x-auto p-4 pb-6">
-        {KANBAN_COLUMNS.map(column => {
-          const columnIssues = groupedIssues.get(column.status) || [];
-          
-          return (
-            <KanbanColumn
-              key={column.status}
-              status={column.status}
-              label={column.label}
-              color={column.color}
-              headerBg={column.headerBg}
-              issues={columnIssues}
-              onIssueClick={handleIssueClick}
-              onIssueDoubleClick={handleIssueDoubleClick}
-            />
-          );
-        })}
-      </div>
+      {/* Kanban columns with DnD */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
+      >
+        <div className="flex-1 flex gap-4 overflow-x-auto p-4 pb-6">
+          {KANBAN_COLUMNS.map(column => {
+            const columnIssues = groupedIssues.get(column.status) || [];
+            const isDropTarget = dragOverColumnId === column.status;
+            
+            return (
+              <KanbanColumn
+                key={column.status}
+                status={column.status}
+                label={column.label}
+                color={column.color}
+                headerBg={column.headerBg}
+                issues={columnIssues}
+                draggingId={draggingId}
+                isDropTarget={isDropTarget}
+                onIssueClick={handleIssueClick}
+                onIssueDoubleClick={handleIssueDoubleClick}
+              />
+            );
+          })}
+        </div>
+
+        {/* Drag overlay - shows a preview of the dragged card */}
+        <DragOverlay dropAnimation={{
+          duration: 200,
+          easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+        }}>
+          {draggedIssue ? (
+            <div className="w-72">
+              <KanbanCard
+                issue={draggedIssue}
+                isDragging
+                className="shadow-xl rotate-2 scale-105"
+              />
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
 
       {/* Filtered results indicator */}
       {totalCount !== issues.length && (

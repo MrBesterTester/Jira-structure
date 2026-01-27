@@ -14,12 +14,12 @@
 | 1 | Project Setup & Core Data Layer | Complete | 4/4 |
 | 2 | State Management & Basic UI Shell | Complete | 3/3 |
 | 3 | Tree View Implementation | Complete | 3/3 |
-| 4 | Kanban Board Implementation | In Progress | 1/3 |
+| 4 | Kanban Board Implementation | In Progress | 2/3 |
 | 5 | Issue Management & Search | Not Started | 0/4 |
 | 6 | Bulk Operations, Import/Export & Polish | Not Started | 0/4 |
 | 7 | MCP Integration (Atlassian-Compatible) | Not Started | 0/3 |
 
-**Total Progress: 11/24 steps completed**
+**Total Progress: 12/24 steps completed**
 
 ---
 
@@ -139,13 +139,13 @@
 - [x] **TEST**: Board displays columns, issues in correct columns
 
 ### Step 4.2: Implement Kanban Drag-and-Drop
-- [ ] Add DndContext to KanbanBoard
-- [ ] Make KanbanColumn droppable
-- [ ] Make KanbanCard draggable
-- [ ] Add updateIssueStatus action
-- [ ] Implement optimistic updates
-- [ ] Add smooth transition animations
-- [ ] **TEST**: Can drag cards between columns, status updates, data persists
+- [x] Add DndContext to KanbanBoard
+- [x] Make KanbanColumn droppable
+- [x] Make KanbanCard draggable
+- [x] Add updateIssueStatus action
+- [x] Implement optimistic updates
+- [x] Add smooth transition animations
+- [x] **TEST**: Can drag cards between columns, status updates, data persists
 
 ### Step 4.3: Add Swimlanes (Grouping)
 - [ ] Add groupBy state to KanbanBoard
