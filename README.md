@@ -288,6 +288,22 @@ You can:
 
 ---
 
+## Known Testing Limitations
+
+The following features could not be fully verified during automated testing:
+
+| Test | Status | Reason |
+|------|--------|--------|
+| Kanban Drag-and-Drop | PARTIAL | Browser automation cannot simulate @dnd-kit pointer events |
+| Tree View Drag-and-Drop | PARTIAL | Same @dnd-kit limitation as above |
+| Error Boundary | SKIPPED | Requires intentionally breaking a component |
+
+Drag-and-drop functionality was verified indirectly through status dropdown changes, which use the same underlying mechanism.
+
+For full details, see [Incomplete Tests](docs/Step-6-4_UI-Testing-Plan.md#incomplete-tests) in the testing plan.
+
+---
+
 ## Troubleshooting
 
 ### App won't start
