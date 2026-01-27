@@ -13,13 +13,13 @@
 |-------|-------------|--------|----------|
 | 1 | Project Setup & Core Data Layer | Complete | 4/4 |
 | 2 | State Management & Basic UI Shell | Complete | 3/3 |
-| 3 | Tree View Implementation | In Progress | 1/3 |
+| 3 | Tree View Implementation | In Progress | 2/3 |
 | 4 | Kanban Board Implementation | Not Started | 0/3 |
 | 5 | Issue Management & Search | Not Started | 0/4 |
 | 6 | Bulk Operations, Import/Export & Polish | Not Started | 0/4 |
 | 7 | MCP Integration (Future) | Not Started | 0/1 |
 
-**Total Progress: 8/22 steps completed**
+**Total Progress: 9/22 steps completed**
 
 ---
 
@@ -111,13 +111,13 @@
 - [x] **TEST**: Issues display in correct hierarchy, expand/collapse works
 
 ### Step 3.2: Implement Drag-and-Drop for Tree
-- [ ] Install @dnd-kit/core and related packages
-- [ ] Update TreeView with DndContext
-- [ ] Make TreeNode draggable and droppable
-- [ ] Create treeOperations.ts utility
-- [ ] Prevent invalid moves (circular references)
-- [ ] Add moveIssue action to IssueStore
-- [ ] **TEST**: Can drag issues to new parents, hierarchy updates, data persists
+- [x] Install @dnd-kit/core and related packages
+- [x] Update TreeView with DndContext
+- [x] Make TreeNode draggable and droppable
+- [x] Create treeOperations.ts utility
+- [x] Prevent invalid moves (circular references)
+- [x] Add moveIssue action to IssueStore (already existed)
+- [x] **TEST**: Can drag issues to new parents, hierarchy updates, data persists
 
 ### Step 3.3: Add Relationship Visualization
 - [ ] Create RelationshipLines.tsx (SVG overlay)

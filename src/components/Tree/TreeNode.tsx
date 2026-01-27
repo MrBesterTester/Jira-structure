@@ -1,15 +1,18 @@
 /**
- * TreeNode - Recursive tree node component
+ * TreeNode - Recursive tree node component with drag-and-drop
  * 
  * Displays a single issue in the tree with:
  * - Indentation based on depth
  * - Expand/collapse chevron (if has children)
  * - IssueCard in compact mode
- * - Drag handle placeholder (for future drag-and-drop)
+ * - Drag handle for reordering
+ * - Drop zones for hierarchy changes
  * - Recursive rendering of children when expanded
  */
 
-import { memo, useCallback, forwardRef } from 'react';
+import { memo, useCallback, useMemo } from 'react';
+import { useDraggable, useDroppable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 import type { Issue } from '../../types';
 import { IssueCard } from '../Issue';
 
@@ -32,6 +35,10 @@ interface TreeNodeProps {
   getChildrenForIssue: (issueId: string) => Issue[];
   /** Whether this node is currently focused for keyboard navigation */
   isFocused: boolean;
+  /** ID of the issue being dragged (for styling) */
+  draggingId: string | null;
+  /** ID of current drop target */
+  dropTargetId: string | null;
   /** Handler for expand/collapse toggle */
   onToggleExpand: (issueId: string) => void;
   /** Handler for issue click (selection) */
@@ -90,14 +97,27 @@ const Chevron = memo(function Chevron({ isExpanded, hasChildren, onClick }: Chev
 });
 
 // ============================================================================
-// DRAG HANDLE (placeholder for Phase 3.2)
+// DRAG HANDLE
 // ============================================================================
 
-const DragHandle = memo(function DragHandle() {
+interface DragHandleProps {
+  listeners: ReturnType<typeof useDraggable>['listeners'];
+  attributes: ReturnType<typeof useDraggable>['attributes'];
+  isDragging: boolean;
+}
+
+const DragHandle = memo(function DragHandle({ listeners, attributes, isDragging }: DragHandleProps) {
   return (
     <div 
-      className="w-4 h-5 flex items-center justify-center shrink-0 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity"
+      className={`
+        w-4 h-5 flex items-center justify-center shrink-0 
+        cursor-grab active:cursor-grabbing
+        opacity-0 group-hover:opacity-100 transition-opacity
+        ${isDragging ? 'opacity-100' : ''}
+      `}
       title="Drag to move"
+      {...listeners}
+      {...attributes}
     >
       <svg className="w-3 h-4 text-gray-400" viewBox="0 0 6 10" fill="currentColor">
         <circle cx="1" cy="1" r="1" />
@@ -112,27 +132,102 @@ const DragHandle = memo(function DragHandle() {
 });
 
 // ============================================================================
+// DROP INDICATOR
+// ============================================================================
+
+interface DropIndicatorProps {
+  position: 'before' | 'inside' | 'after';
+  indentPx: number;
+}
+
+const DropIndicator = memo(function DropIndicator({ position, indentPx }: DropIndicatorProps) {
+  if (position === 'inside') {
+    return null; // Shown via border styling on the node itself
+  }
+
+  return (
+    <div
+      className={`
+        absolute left-0 right-0 h-0.5 bg-blue-500 z-10 pointer-events-none
+        ${position === 'before' ? 'top-0' : 'bottom-0'}
+      `}
+      style={{ marginLeft: `${indentPx}px` }}
+    >
+      <div 
+        className="absolute -left-1 -top-1 w-2 h-2 rounded-full bg-blue-500"
+      />
+    </div>
+  );
+});
+
+// ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
-export const TreeNode = memo(forwardRef<HTMLDivElement, TreeNodeProps>(function TreeNode(
-  {
-    issue,
-    depth,
-    isExpanded,
-    children,
-    expandedIds,
-    getChildrenForIssue,
-    isFocused,
-    onToggleExpand,
-    onIssueClick,
-    onIssueDoubleClick,
-    nodeRef,
-  },
-  _ref
-) {
+export const TreeNode = memo(function TreeNode({
+  issue,
+  depth,
+  isExpanded,
+  children,
+  expandedIds,
+  getChildrenForIssue,
+  isFocused,
+  draggingId,
+  dropTargetId,
+  onToggleExpand,
+  onIssueClick,
+  onIssueDoubleClick,
+  nodeRef,
+}: TreeNodeProps) {
   const hasChildren = children.length > 0;
   const indentPx = BASE_PADDING + depth * INDENT_PER_LEVEL;
+  const isDropTarget = dropTargetId === issue.id;
+
+  // Draggable setup
+  const {
+    attributes,
+    listeners,
+    setNodeRef: setDragRef,
+    transform,
+    isDragging: isDraggingActive,
+  } = useDraggable({
+    id: issue.id,
+    data: {
+      type: 'tree-node',
+      issue,
+      depth,
+    },
+  });
+
+  // Droppable setup
+  const { setNodeRef: setDropRef, isOver } = useDroppable({
+    id: issue.id,
+    data: {
+      type: 'tree-node',
+      issue,
+      depth,
+      accepts: 'tree-node',
+    },
+  });
+
+  // Combine refs
+  const setRefs = useCallback(
+    (element: HTMLDivElement | null) => {
+      setDragRef(element);
+      setDropRef(element);
+      nodeRef?.(issue.id, element);
+    },
+    [setDragRef, setDropRef, nodeRef, issue.id]
+  );
+
+  // Transform style for dragging
+  const style = useMemo(() => {
+    if (!transform) return undefined;
+    return {
+      transform: CSS.Translate.toString(transform),
+      zIndex: isDraggingActive ? 1000 : undefined,
+    };
+  }, [transform, isDraggingActive]);
 
   // Handle chevron click
   const handleChevronClick = useCallback(() => {
@@ -142,7 +237,6 @@ export const TreeNode = memo(forwardRef<HTMLDivElement, TreeNodeProps>(function 
   // Handle card click
   const handleCardClick = useCallback((clickedIssue: Issue) => {
     // Create a synthetic event for the click handler
-    // Note: This is called from IssueCard, so we wrap it
     onIssueClick(clickedIssue, { ctrlKey: false, metaKey: false, shiftKey: false } as React.MouseEvent);
   }, [onIssueClick]);
 
@@ -151,29 +245,41 @@ export const TreeNode = memo(forwardRef<HTMLDivElement, TreeNodeProps>(function 
     onIssueDoubleClick(clickedIssue);
   }, [onIssueDoubleClick]);
 
-  // Reference callback for keyboard navigation
-  const setRef = useCallback((element: HTMLDivElement | null) => {
-    nodeRef?.(issue.id, element);
-  }, [issue.id, nodeRef]);
+  // Don't render children of dragged node while dragging
+  const shouldRenderChildren = isExpanded && hasChildren && !isDraggingActive;
 
   return (
     <>
       {/* Current node */}
       <div
-        ref={setRef}
+        ref={setRefs}
         className={`
-          group flex items-center gap-1 py-0.5 border-l-2 transition-colors
+          group flex items-center gap-1 py-0.5 border-l-2 transition-colors relative
           ${isFocused 
             ? 'bg-blue-50 border-l-blue-400' 
-            : 'border-l-transparent hover:bg-gray-50'
+            : isDraggingActive
+              ? 'opacity-50 bg-gray-100 border-l-gray-300'
+              : isOver || isDropTarget
+                ? 'bg-blue-100 border-l-blue-400 ring-2 ring-blue-300 ring-inset'
+                : 'border-l-transparent hover:bg-gray-50'
           }
         `}
-        style={{ paddingLeft: `${indentPx}px` }}
+        style={{ 
+          paddingLeft: `${indentPx}px`,
+          ...style,
+        }}
         data-issue-id={issue.id}
         tabIndex={-1}
       >
+        {/* Drop indicator for before/after */}
+        {isOver && <DropIndicator position="inside" indentPx={indentPx} />}
+
         {/* Drag handle (shown on hover) */}
-        <DragHandle />
+        <DragHandle 
+          listeners={listeners} 
+          attributes={attributes} 
+          isDragging={isDraggingActive}
+        />
         
         {/* Expand/collapse chevron */}
         <Chevron
@@ -201,7 +307,7 @@ export const TreeNode = memo(forwardRef<HTMLDivElement, TreeNodeProps>(function 
       </div>
 
       {/* Recursively render children when expanded */}
-      {isExpanded && hasChildren && (
+      {shouldRenderChildren && (
         <div className="tree-children">
           {children.map(childIssue => (
             <TreeNode
@@ -213,17 +319,19 @@ export const TreeNode = memo(forwardRef<HTMLDivElement, TreeNodeProps>(function 
               expandedIds={expandedIds}
               getChildrenForIssue={getChildrenForIssue}
               isFocused={false} // Focused state is managed by parent
+              draggingId={draggingId}
+              dropTargetId={dropTargetId}
               onToggleExpand={onToggleExpand}
               onIssueClick={onIssueClick}
               onIssueDoubleClick={onIssueDoubleClick}
-              nodeRef={nodeRef}
+              {...(nodeRef ? { nodeRef } : {})}
             />
           ))}
         </div>
       )}
     </>
   );
-}));
+});
 
 // ============================================================================
 // EXPORTS

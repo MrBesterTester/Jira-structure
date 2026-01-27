@@ -1,8 +1,9 @@
 /**
- * TreeView - Main tree view container
+ * TreeView - Main tree view container with drag-and-drop
  * 
  * Features:
  * - Displays issues in hierarchical tree structure
+ * - Drag-and-drop to move issues between parents
  * - Expand/collapse functionality
  * - Keyboard navigation (arrows, Enter)
  * - Filtering by issue type
@@ -10,12 +11,26 @@
  * - Loading and empty states
  */
 
-import { memo, useCallback, useEffect, useRef, useMemo } from 'react';
-import type { Issue, SortConfig, SortDirection } from '../../types';
+import { memo, useCallback, useEffect, useRef, useMemo, useState } from 'react';
+import {
+  DndContext,
+  DragOverlay,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  KeyboardSensor,
+  closestCenter,
+  type DragStartEvent,
+  type DragEndEvent,
+  type DragOverEvent,
+} from '@dnd-kit/core';
+import type { Issue, SortConfig } from '../../types';
 import { IssueType, Priority, IssueStatus } from '../../types';
 import { useIssueStore, useUIStore } from '../../store';
+import { validateMove } from '../../utils';
 import { TreeNode } from './TreeNode';
 import { TreeToolbar } from './TreeToolbar';
+import { IssueCard } from '../Issue';
 
 // ============================================================================
 // TYPES
@@ -52,8 +67,8 @@ function sortIssues(issues: Issue[], sortConfig: SortConfig | null): Issue[] {
   const multiplier = direction === 'asc' ? 1 : -1;
 
   return [...issues].sort((a, b) => {
-    let aValue = a[field];
-    let bValue = b[field];
+    const aValue = a[field];
+    const bValue = b[field];
 
     // Handle priority sorting with custom order
     if (field === 'priority') {
@@ -105,6 +120,7 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
   const loading = useIssueStore(state => state.loading);
   const error = useIssueStore(state => state.error);
   const getIssuesByParentId = useIssueStore(state => state.getIssuesByParentId);
+  const moveIssue = useIssueStore(state => state.moveIssue);
   
   const expandedIssueIds = useUIStore(state => state.expandedIssueIds);
   const focusedIssueId = useUIStore(state => state.focusedIssueId);
@@ -118,12 +134,16 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
   const collapseAll = useUIStore(state => state.collapseAll);
   const setFocusedIssue = useUIStore(state => state.setFocusedIssue);
   const toggleIssueSelection = useUIStore(state => state.toggleIssueSelection);
-  const selectIssue = useUIStore(state => state.selectIssue);
   const selectMultipleIssues = useUIStore(state => state.selectMultipleIssues);
   const selectRange = useUIStore(state => state.selectRange);
   const openDetailPanel = useUIStore(state => state.openDetailPanel);
   const setFilter = useUIStore(state => state.setFilter);
   const setSortConfig = useUIStore(state => state.setSortConfig);
+
+  // Drag-and-drop state
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dropTargetId, setDropTargetId] = useState<string | null>(null);
+  const [draggedIssue, setDraggedIssue] = useState<Issue | null>(null);
 
   // Refs for keyboard navigation
   const containerRef = useRef<HTMLDivElement>(null);
@@ -209,6 +229,87 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
   }, []);
 
   // ============================================================================
+  // DRAG AND DROP SENSORS
+  // ============================================================================
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px movement before drag starts
+      },
+    }),
+    useSensor(KeyboardSensor)
+  );
+
+  // ============================================================================
+  // DRAG HANDLERS
+  // ============================================================================
+
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    const { active } = event;
+    const issue = issues.find(i => i.id === active.id);
+    
+    if (issue) {
+      setDraggingId(active.id as string);
+      setDraggedIssue(issue);
+    }
+  }, [issues]);
+
+  const handleDragOver = useCallback((event: DragOverEvent) => {
+    const { over } = event;
+    
+    if (over && draggingId && over.id !== draggingId) {
+      // Validate if this is a valid drop target
+      const validation = validateMove(draggingId, over.id as string, issues);
+      if (validation.valid) {
+        setDropTargetId(over.id as string);
+      } else {
+        setDropTargetId(null);
+      }
+    } else {
+      setDropTargetId(null);
+    }
+  }, [draggingId, issues]);
+
+  const handleDragEnd = useCallback(async (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    // Reset drag state
+    setDraggingId(null);
+    setDropTargetId(null);
+    setDraggedIssue(null);
+    
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const draggedId = active.id as string;
+    const targetId = over.id as string;
+
+    // Validate the move
+    const validation = validateMove(draggedId, targetId, issues);
+    
+    if (!validation.valid) {
+      console.warn('Invalid move:', validation.reason);
+      return;
+    }
+
+    // Execute the move - make the dragged issue a child of the target
+    const success = await moveIssue(draggedId, targetId);
+    
+    if (success) {
+      // Expand the target to show the newly moved child
+      expandIssue(targetId);
+    }
+  }, [issues, moveIssue, expandIssue]);
+
+  const handleDragCancel = useCallback(() => {
+    setDraggingId(null);
+    setDropTargetId(null);
+    setDraggedIssue(null);
+  }, []);
+
+  // ============================================================================
   // HANDLERS
   // ============================================================================
 
@@ -261,9 +362,10 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
   const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
     if (!focusedIssueId) {
       // If nothing focused, focus the first item
-      if (visibleIssueIds.length > 0 && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
+      const firstId = visibleIssueIds[0];
+      if (firstId && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
         event.preventDefault();
-        setFocusedIssue(visibleIssueIds[0]);
+        setFocusedIssue(firstId);
         return;
       }
       return;
@@ -279,8 +381,8 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
       case 'ArrowDown': {
         event.preventDefault();
         const nextIndex = currentIndex + 1;
-        if (nextIndex < visibleIssueIds.length) {
-          const nextId = visibleIssueIds[nextIndex];
+        const nextId = visibleIssueIds[nextIndex];
+        if (nextId) {
           setFocusedIssue(nextId);
           
           // Scroll into view
@@ -293,8 +395,8 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
       case 'ArrowUp': {
         event.preventDefault();
         const prevIndex = currentIndex - 1;
-        if (prevIndex >= 0) {
-          const prevId = visibleIssueIds[prevIndex];
+        const prevId = visibleIssueIds[prevIndex];
+        if (prevId) {
           setFocusedIssue(prevId);
           
           // Scroll into view
@@ -313,8 +415,9 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
           } else {
             // Move to first child if already expanded
             const children = getChildrenForIssue(focusedIssueId);
-            if (children.length > 0) {
-              setFocusedIssue(children[0].id);
+            const firstChild = children[0];
+            if (firstChild) {
+              setFocusedIssue(firstChild.id);
             }
           }
         }
@@ -353,9 +456,10 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
 
       case 'Home': {
         event.preventDefault();
-        if (visibleIssueIds.length > 0) {
-          setFocusedIssue(visibleIssueIds[0]);
-          const firstElement = nodeRefs.current.get(visibleIssueIds[0]);
+        const firstId = visibleIssueIds[0];
+        if (firstId) {
+          setFocusedIssue(firstId);
+          const firstElement = nodeRefs.current.get(firstId);
           firstElement?.scrollIntoView({ block: 'start', behavior: 'smooth' });
         }
         break;
@@ -363,8 +467,8 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
 
       case 'End': {
         event.preventDefault();
-        if (visibleIssueIds.length > 0) {
-          const lastId = visibleIssueIds[visibleIssueIds.length - 1];
+        const lastId = visibleIssueIds[visibleIssueIds.length - 1];
+        if (lastId) {
           setFocusedIssue(lastId);
           const lastElement = nodeRefs.current.get(lastId);
           lastElement?.scrollIntoView({ block: 'end', behavior: 'smooth' });
@@ -474,37 +578,57 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
         onSortChange={handleSortChange}
       />
 
-      {/* Tree container */}
-      <div
-        ref={containerRef}
-        className="bg-white rounded-lg border border-gray-200 overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-inset"
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-        role="tree"
-        aria-label="Issue hierarchy"
+      {/* Tree container with DnD */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
       >
-        <div className="divide-y divide-gray-100">
-          {sortedRootIssues.map(issue => (
-            <TreeNode
-              key={issue.id}
-              issue={issue}
-              depth={0}
-              isExpanded={expandedIds.has(issue.id)}
-              children={getChildrenForIssue(issue.id)}
-              expandedIds={expandedIds}
-              getChildrenForIssue={getChildrenForIssue}
-              isFocused={focusedIssueId === issue.id}
-              onToggleExpand={handleToggleExpand}
-              onIssueClick={handleIssueClick}
-              onIssueDoubleClick={handleIssueDoubleClick}
-              nodeRef={setNodeRef}
-            />
-          ))}
+        <div
+          ref={containerRef}
+          className="bg-white rounded-lg border border-gray-200 overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-inset"
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+          role="tree"
+          aria-label="Issue hierarchy"
+        >
+          <div className="divide-y divide-gray-100">
+            {sortedRootIssues.map(issue => (
+              <TreeNode
+                key={issue.id}
+                issue={issue}
+                depth={0}
+                isExpanded={expandedIds.has(issue.id)}
+                children={getChildrenForIssue(issue.id)}
+                expandedIds={expandedIds}
+                getChildrenForIssue={getChildrenForIssue}
+                isFocused={focusedIssueId === issue.id}
+                draggingId={draggingId}
+                dropTargetId={dropTargetId}
+                onToggleExpand={handleToggleExpand}
+                onIssueClick={handleIssueClick}
+                onIssueDoubleClick={handleIssueDoubleClick}
+                nodeRef={setNodeRef}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+
+        {/* Drag overlay - shows a preview of the dragged item */}
+        <DragOverlay dropAnimation={null}>
+          {draggedIssue ? (
+            <div className="bg-white shadow-lg rounded border border-blue-300 p-1 opacity-90">
+              <IssueCard issue={draggedIssue} mode="compact" />
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
 
       {/* Keyboard shortcuts hint */}
-      <div className="mt-3 text-xs text-gray-400 flex items-center gap-4">
+      <div className="mt-3 text-xs text-gray-400 flex items-center gap-4 flex-wrap">
         <span>
           <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600">↑↓</kbd> Navigate
         </span>
@@ -516,6 +640,10 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
         </span>
         <span>
           <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600">Space</kbd> Select
+        </span>
+        <span className="text-gray-300">|</span>
+        <span>
+          Drag issues to change parent
         </span>
       </div>
     </div>

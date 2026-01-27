@@ -5,7 +5,7 @@
  * and sorting options.
  */
 
-import { memo, useCallback } from 'react';
+import { memo, useCallback, Fragment } from 'react';
 import type { Issue, SortConfig } from '../../types';
 import { IssueType } from '../../types';
 import { IssueTypeIcon, getAllIssueTypes } from '../Issue';
@@ -192,14 +192,14 @@ export const TreeToolbar = memo(function TreeToolbar({
         >
           <option value="">Sort by: Default</option>
           {sortOptions.map(option => (
-            <>
-              <option key={`${option.value}-desc`} value={`${option.value}-desc`}>
+            <Fragment key={option.value}>
+              <option value={`${option.value}-desc`}>
                 {option.label} (Newest first)
               </option>
-              <option key={`${option.value}-asc`} value={`${option.value}-asc`}>
+              <option value={`${option.value}-asc`}>
                 {option.label} (Oldest first)
               </option>
-            </>
+            </Fragment>
           ))}
         </select>
       </div>
