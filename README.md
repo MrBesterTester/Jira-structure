@@ -4,6 +4,27 @@ A locally-hosted Jira simulator with Structure plugin functionality, designed fo
 
 ---
 
+## Table of Contents
+
+- [What Is This?](#what-is-this)
+- [Quick Start](#quick-start)
+- [Sharing with Others](#sharing-with-others)
+- [Connecting Claude Desktop (MCP Integration)](#connecting-claude-desktop-mcp-integration)
+- [Sample Data](#sample-data)
+- [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Data Storage](#data-storage)
+- [Cross-Platform Compatibility](#cross-platform-compatibility)
+- [Known Testing Limitations](#known-testing-limitations)
+- [Troubleshooting](#troubleshooting)
+- [Learning Resources](#learning-resources)
+- [Privacy & Security](#privacy--security)
+- [For Developers: Continuing This Project](#for-developers-continuing-this-project)
+- [Contributing](#contributing)
+- [License](#license)
+- [Credits](#credits)
+
+---
+
 ## What Is This?
 
 This application simulates Atlassian Jira with the Structure plugin, purpose-built for learning how to use **Claude Cowork** to manage projects through natural language.
@@ -326,6 +347,32 @@ You can:
 - **Back up** by copying the `/data` folder
 - **Edit directly** — JSON files are human-readable
 - **Share** — Send the `/data` folder to others
+
+---
+
+## Cross-Platform Compatibility
+
+This application runs on **any operating system** that supports Node.js 18+. The entire stack is pure JavaScript/TypeScript with no native compiled code or architecture-specific dependencies.
+
+### Supported Platforms
+
+| Platform | Status | Start Method |
+|----------|--------|--------------|
+| macOS (Intel) | ✅ Works | Double-click `START-HERE.command` or `npm start` |
+| macOS (Apple Silicon M1/M2/M3/M4) | ✅ Works | Double-click `START-HERE.command` or `npm start` |
+| Windows | ✅ Works | Double-click `START-HERE.bat` or `npm start` |
+| Linux | ✅ Works | `npm start` in terminal |
+
+### Why It's Cross-Compatible
+
+| Component | Architecture Dependency |
+|-----------|------------------------|
+| React/Vite frontend | None — runs in browser as JavaScript |
+| Express server | None — pure JavaScript on Node.js |
+| MCP server | None — pure JavaScript on Node.js |
+| npm dependencies | None have native bindings |
+
+The `npm install` step downloads the same JavaScript packages regardless of your OS or CPU architecture. There's nothing to recompile — if you have Node.js, it just works.
 
 ---
 
