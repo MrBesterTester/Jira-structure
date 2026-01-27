@@ -15,11 +15,11 @@
 | 2 | State Management & Basic UI Shell | Complete | 3/3 |
 | 3 | Tree View Implementation | Complete | 3/3 |
 | 4 | Kanban Board Implementation | Complete | 3/3 |
-| 5 | Issue Management & Search | In Progress | 1/4 |
+| 5 | Issue Management & Search | In Progress | 2/4 |
 | 6 | Bulk Operations, Import/Export & Polish | Not Started | 0/4 |
 | 7 | MCP Integration (Atlassian-Compatible) | Not Started | 0/3 |
 
-**Total Progress: 14/24 steps completed**
+**Total Progress: 15/24 steps completed**
 
 ---
 
@@ -170,13 +170,13 @@
 - [x] **TEST**: Can view and edit all fields, changes persist
 
 ### Step 5.2: Create Issue Relationships Tab
-- [ ] Create IssueRelationshipsTab.tsx
-- [ ] Implement Parent section with change/remove
-- [ ] Implement Children section with add/remove
-- [ ] Implement Blocks/Blocked By sections
-- [ ] Implement Related To section
-- [ ] Create IssuePicker.tsx modal
-- [ ] **TEST**: Can view and manage all relationship types
+- [x] Create IssueRelationshipsTab.tsx
+- [x] Implement Parent section with change/remove
+- [x] Implement Children section with add/remove
+- [x] Implement Blocks/Blocked By sections
+- [x] Implement Related To section
+- [x] Create IssuePicker.tsx modal
+- [x] **TEST**: Can view and manage all relationship types
 
 ### Step 5.3: Implement Create Issue Flow
 - [ ] Create CreateIssueModal.tsx

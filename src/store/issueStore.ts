@@ -30,6 +30,14 @@ interface IssueState {
   bulkDeleteIssues: (issueIds: string[]) => Promise<boolean>;
   moveIssue: (issueId: string, newParentId: string | null) => Promise<boolean>;
   
+  // Relationship Actions
+  addBlocker: (issueId: string, blockerId: string) => Promise<boolean>;
+  removeBlocker: (issueId: string, blockerId: string) => Promise<boolean>;
+  addRelated: (issueId: string, relatedId: string) => Promise<boolean>;
+  removeRelated: (issueId: string, relatedId: string) => Promise<boolean>;
+  addChild: (parentId: string, childId: string) => Promise<boolean>;
+  removeChild: (parentId: string, childId: string) => Promise<boolean>;
+  
   // Selectors (implemented as functions for convenience)
   getIssueById: (id: string) => Issue | undefined;
   getIssueByKey: (key: string) => Issue | undefined;
@@ -372,6 +380,250 @@ export const useIssueStore = create<IssueState>((set, get) => ({
       return false;
     }
     
+    return true;
+  },
+
+  // ============================================================================
+  // RELATIONSHIP ACTIONS
+  // ============================================================================
+
+  /**
+   * Add a blocker relationship (issueId is blocked by blockerId)
+   */
+  addBlocker: async (issueId, blockerId) => {
+    const state = get();
+    const now = new Date().toISOString();
+
+    const issue = state.issues.find(i => i.id === issueId);
+    const blocker = state.issues.find(i => i.id === blockerId);
+
+    if (!issue || !blocker) {
+      set({ error: 'Issue not found' });
+      return false;
+    }
+
+    // Check if already blocked
+    if (issue.blockedBy.includes(blockerId)) {
+      return true; // Already exists
+    }
+
+    // Prevent self-blocking
+    if (issueId === blockerId) {
+      set({ error: 'An issue cannot block itself' });
+      return false;
+    }
+
+    const updatedIssues = state.issues.map(i => {
+      if (i.id === issueId) {
+        return { ...i, blockedBy: [...i.blockedBy, blockerId], updatedAt: now };
+      }
+      if (i.id === blockerId) {
+        return { ...i, blocks: [...i.blocks, issueId], updatedAt: now };
+      }
+      return i;
+    });
+
+    set({ issues: updatedIssues, error: null });
+    
+    const success = await state._syncToApi(updatedIssues);
+    if (!success) {
+      set({ issues: state.issues, error: 'Failed to add blocker' });
+      return false;
+    }
+    return true;
+  },
+
+  /**
+   * Remove a blocker relationship
+   */
+  removeBlocker: async (issueId, blockerId) => {
+    const state = get();
+    const now = new Date().toISOString();
+
+    const updatedIssues = state.issues.map(i => {
+      if (i.id === issueId) {
+        return { ...i, blockedBy: i.blockedBy.filter(id => id !== blockerId), updatedAt: now };
+      }
+      if (i.id === blockerId) {
+        return { ...i, blocks: i.blocks.filter(id => id !== issueId), updatedAt: now };
+      }
+      return i;
+    });
+
+    set({ issues: updatedIssues, error: null });
+    
+    const success = await state._syncToApi(updatedIssues);
+    if (!success) {
+      set({ issues: state.issues, error: 'Failed to remove blocker' });
+      return false;
+    }
+    return true;
+  },
+
+  /**
+   * Add a related issue (bidirectional link)
+   */
+  addRelated: async (issueId, relatedId) => {
+    const state = get();
+    const now = new Date().toISOString();
+
+    const issue = state.issues.find(i => i.id === issueId);
+    const related = state.issues.find(i => i.id === relatedId);
+
+    if (!issue || !related) {
+      set({ error: 'Issue not found' });
+      return false;
+    }
+
+    // Check if already related
+    if (issue.relatedTo.includes(relatedId)) {
+      return true; // Already exists
+    }
+
+    // Prevent self-relation
+    if (issueId === relatedId) {
+      set({ error: 'An issue cannot be related to itself' });
+      return false;
+    }
+
+    const updatedIssues = state.issues.map(i => {
+      if (i.id === issueId) {
+        return { ...i, relatedTo: [...i.relatedTo, relatedId], updatedAt: now };
+      }
+      if (i.id === relatedId) {
+        return { ...i, relatedTo: [...i.relatedTo, issueId], updatedAt: now };
+      }
+      return i;
+    });
+
+    set({ issues: updatedIssues, error: null });
+    
+    const success = await state._syncToApi(updatedIssues);
+    if (!success) {
+      set({ issues: state.issues, error: 'Failed to add related issue' });
+      return false;
+    }
+    return true;
+  },
+
+  /**
+   * Remove a related issue (bidirectional)
+   */
+  removeRelated: async (issueId, relatedId) => {
+    const state = get();
+    const now = new Date().toISOString();
+
+    const updatedIssues = state.issues.map(i => {
+      if (i.id === issueId) {
+        return { ...i, relatedTo: i.relatedTo.filter(id => id !== relatedId), updatedAt: now };
+      }
+      if (i.id === relatedId) {
+        return { ...i, relatedTo: i.relatedTo.filter(id => id !== issueId), updatedAt: now };
+      }
+      return i;
+    });
+
+    set({ issues: updatedIssues, error: null });
+    
+    const success = await state._syncToApi(updatedIssues);
+    if (!success) {
+      set({ issues: state.issues, error: 'Failed to remove related issue' });
+      return false;
+    }
+    return true;
+  },
+
+  /**
+   * Add a child to a parent issue
+   */
+  addChild: async (parentId, childId) => {
+    const state = get();
+    const now = new Date().toISOString();
+
+    const parent = state.issues.find(i => i.id === parentId);
+    const child = state.issues.find(i => i.id === childId);
+
+    if (!parent || !child) {
+      set({ error: 'Issue not found' });
+      return false;
+    }
+
+    // Prevent self-parenting
+    if (parentId === childId) {
+      set({ error: 'An issue cannot be its own parent' });
+      return false;
+    }
+
+    // Prevent circular reference
+    const isCircular = (checkId: string | null): boolean => {
+      if (!checkId) return false;
+      if (checkId === childId) return true;
+      const checkIssue = state.issues.find(i => i.id === checkId);
+      return checkIssue ? isCircular(checkIssue.parentId) : false;
+    };
+
+    if (isCircular(parentId)) {
+      set({ error: 'Cannot create circular parent-child relationship' });
+      return false;
+    }
+
+    // Remove from old parent if exists
+    const oldParentId = child.parentId;
+
+    const updatedIssues = state.issues.map(i => {
+      // Add to new parent's children
+      if (i.id === parentId) {
+        return { 
+          ...i, 
+          childIds: i.childIds.includes(childId) ? i.childIds : [...i.childIds, childId], 
+          updatedAt: now 
+        };
+      }
+      // Update child's parent
+      if (i.id === childId) {
+        return { ...i, parentId: parentId, updatedAt: now };
+      }
+      // Remove from old parent's children
+      if (oldParentId && i.id === oldParentId) {
+        return { ...i, childIds: i.childIds.filter(id => id !== childId), updatedAt: now };
+      }
+      return i;
+    });
+
+    set({ issues: updatedIssues, error: null });
+    
+    const success = await state._syncToApi(updatedIssues);
+    if (!success) {
+      set({ issues: state.issues, error: 'Failed to add child' });
+      return false;
+    }
+    return true;
+  },
+
+  /**
+   * Remove a child from a parent (moves child to root)
+   */
+  removeChild: async (parentId, childId) => {
+    const state = get();
+    const now = new Date().toISOString();
+
+    const updatedIssues = state.issues.map(i => {
+      if (i.id === parentId) {
+        return { ...i, childIds: i.childIds.filter(id => id !== childId), updatedAt: now };
+      }
+      if (i.id === childId) {
+        return { ...i, parentId: null, updatedAt: now };
+      }
+      return i;
+    });
+
+    set({ issues: updatedIssues, error: null });
+    
+    const success = await state._syncToApi(updatedIssues);
+    if (!success) {
+      set({ issues: state.issues, error: 'Failed to remove child' });
+      return false;
+    }
     return true;
   },
 

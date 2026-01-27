@@ -13,6 +13,7 @@ import type { Issue } from '../../types';
 import { useUIStore, useIssueStore } from '../../store';
 import { IssueTypeIcon } from './IssueTypeIcon';
 import { IssueDetailsTab } from './IssueDetailsTab';
+import { IssueRelationshipsTab } from './IssueRelationshipsTab';
 
 // ============================================================================
 // TYPES
@@ -143,111 +144,6 @@ const TabNav = memo(function TabNav({ activeTab, onTabChange }: TabNavProps) {
   );
 });
 
-// ============================================================================
-// RELATIONSHIPS TAB (Placeholder)
-// ============================================================================
-
-interface RelationshipsTabProps {
-  issue: Issue;
-}
-
-const RelationshipsTab = memo(function RelationshipsTab({ issue }: RelationshipsTabProps) {
-  // Subscribe to issues array to get related issues
-  const issues = useIssueStore(state => state.issues);
-  
-  const getIssueById = (id: string) => issues.find(i => i.id === id);
-  
-  const parentIssue = issue.parentId ? getIssueById(issue.parentId) : null;
-  const childIssues = issue.childIds.map(id => getIssueById(id)).filter(Boolean) as Issue[];
-  const blockedByIssues = issue.blockedBy.map(id => getIssueById(id)).filter(Boolean) as Issue[];
-  const blocksIssues = issue.blocks.map(id => getIssueById(id)).filter(Boolean) as Issue[];
-  const relatedIssues = issue.relatedTo.map(id => getIssueById(id)).filter(Boolean) as Issue[];
-
-  const renderIssueLink = (linkedIssue: Issue) => (
-    <div 
-      key={linkedIssue.id}
-      className="flex items-center gap-2 py-2 px-3 bg-gray-50 rounded-md text-sm"
-    >
-      <IssueTypeIcon type={linkedIssue.type} size="sm" />
-      <span className="font-mono text-gray-500">{linkedIssue.key}</span>
-      <span className="text-gray-700 truncate">{linkedIssue.title}</span>
-    </div>
-  );
-
-  return (
-    <div className="p-4 space-y-6">
-      {/* Parent */}
-      <div>
-        <h4 className="text-sm font-medium text-gray-700 mb-2">Parent</h4>
-        {parentIssue ? (
-          renderIssueLink(parentIssue)
-        ) : (
-          <p className="text-sm text-gray-400 italic">No parent</p>
-        )}
-      </div>
-
-      {/* Children */}
-      <div>
-        <h4 className="text-sm font-medium text-gray-700 mb-2">
-          Children ({childIssues.length})
-        </h4>
-        {childIssues.length > 0 ? (
-          <div className="space-y-2">
-            {childIssues.map(renderIssueLink)}
-          </div>
-        ) : (
-          <p className="text-sm text-gray-400 italic">No children</p>
-        )}
-      </div>
-
-      {/* Blocked By */}
-      <div>
-        <h4 className="text-sm font-medium text-gray-700 mb-2">
-          Blocked By ({blockedByIssues.length})
-        </h4>
-        {blockedByIssues.length > 0 ? (
-          <div className="space-y-2">
-            {blockedByIssues.map(renderIssueLink)}
-          </div>
-        ) : (
-          <p className="text-sm text-gray-400 italic">No blockers</p>
-        )}
-      </div>
-
-      {/* Blocks */}
-      <div>
-        <h4 className="text-sm font-medium text-gray-700 mb-2">
-          Blocks ({blocksIssues.length})
-        </h4>
-        {blocksIssues.length > 0 ? (
-          <div className="space-y-2">
-            {blocksIssues.map(renderIssueLink)}
-          </div>
-        ) : (
-          <p className="text-sm text-gray-400 italic">Not blocking any issues</p>
-        )}
-      </div>
-
-      {/* Related To */}
-      <div>
-        <h4 className="text-sm font-medium text-gray-700 mb-2">
-          Related To ({relatedIssues.length})
-        </h4>
-        {relatedIssues.length > 0 ? (
-          <div className="space-y-2">
-            {relatedIssues.map(renderIssueLink)}
-          </div>
-        ) : (
-          <p className="text-sm text-gray-400 italic">No related issues</p>
-        )}
-      </div>
-
-      <p className="text-xs text-gray-400 pt-4 border-t border-gray-200">
-        Full relationship management coming in Step 5.2
-      </p>
-    </div>
-  );
-});
 
 // ============================================================================
 // ACTIVITY TAB (Placeholder)
@@ -424,7 +320,7 @@ export const IssueDetailPanel = memo(function IssueDetailPanel() {
             <IssueDetailsTab issue={issue} />
           )}
           {activeTab === 'relationships' && (
-            <RelationshipsTab issue={issue} />
+            <IssueRelationshipsTab issue={issue} />
           )}
           {activeTab === 'activity' && (
             <ActivityTab issue={issue} />
