@@ -32,3 +32,6 @@ export {
 // Issue detail panel (slide-out)
 export { IssueDetailPanel } from './IssueDetailPanel';
 export { IssueDetailsTab } from './IssueDetailsTab';
+
+// Create issue modal
+export { CreateIssueModal } from './CreateIssueModal';

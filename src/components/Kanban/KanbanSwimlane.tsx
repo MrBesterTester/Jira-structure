@@ -53,6 +53,8 @@ export interface KanbanSwimlaneProps {
   onIssueClick?: (issue: Issue) => void;
   /** Callback when an issue card is double-clicked */
   onIssueDoubleClick?: (issue: Issue) => void;
+  /** Callback when add issue button is clicked in a column */
+  onAddIssue?: (status: IssueStatus) => void;
   /** Whether this swimlane is initially collapsed */
   defaultCollapsed?: boolean;
   /** Additional class names */
@@ -130,6 +132,7 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
   dragOverSwimlaneId,
   onIssueClick,
   onIssueDoubleClick,
+  onAddIssue,
   defaultCollapsed = false,
   className = '',
 }: KanbanSwimlaneProps) {
@@ -255,6 +258,7 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
                 isDropTarget={isColumnDropTarget}
                 {...(onIssueClick && { onIssueClick })}
                 {...(onIssueDoubleClick && { onIssueDoubleClick })}
+                {...(onAddIssue && { onAddIssue })}
               />
             );
           })}

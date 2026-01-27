@@ -142,6 +142,7 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
   const setFilter = useUIStore(state => state.setFilter);
   const setSortConfig = useUIStore(state => state.setSortConfig);
   const toggleRelationshipLines = useUIStore(state => state.toggleRelationshipLines);
+  const openCreateIssueModal = useUIStore(state => state.openCreateIssueModal);
 
   // Drag-and-drop state
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -340,6 +341,10 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
   const handleToggleRelationshipLines = useCallback(() => {
     toggleRelationshipLines();
   }, [toggleRelationshipLines]);
+
+  const handleCreateIssue = useCallback(() => {
+    openCreateIssueModal(null);
+  }, [openCreateIssueModal]);
 
   const handleRelationshipIssueClick = useCallback((issueId: string) => {
     // Focus and select the clicked issue
@@ -583,6 +588,7 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
           onTypeFilterChange={handleTypeFilterChange}
           onSortChange={handleSortChange}
           onToggleRelationshipLines={handleToggleRelationshipLines}
+          onCreateIssue={handleCreateIssue}
         />
         
         <div className="bg-white rounded-lg border border-gray-200 p-8">
@@ -616,6 +622,7 @@ export const TreeView = memo(function TreeView({ className = '' }: TreeViewProps
         onTypeFilterChange={handleTypeFilterChange}
         onSortChange={handleSortChange}
         onToggleRelationshipLines={handleToggleRelationshipLines}
+        onCreateIssue={handleCreateIssue}
       />
 
       {/* Tree container with DnD */}

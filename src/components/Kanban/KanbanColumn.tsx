@@ -37,6 +37,8 @@ export interface KanbanColumnProps {
   onIssueClick?: (issue: Issue) => void;
   /** Callback when an issue card is double-clicked */
   onIssueDoubleClick?: (issue: Issue) => void;
+  /** Callback when the add issue button is clicked */
+  onAddIssue?: (status: IssueStatus) => void;
   /** Additional class names */
   className?: string;
 }
@@ -55,6 +57,7 @@ export const KanbanColumn = memo(function KanbanColumn({
   isDropTarget = false,
   onIssueClick,
   onIssueDoubleClick,
+  onAddIssue,
   className = '',
 }: KanbanColumnProps) {
   // Make column droppable
@@ -96,8 +99,9 @@ export const KanbanColumn = memo(function KanbanColumn({
             </span>
           </div>
 
-          {/* Column actions - placeholder for future add button */}
+          {/* Add issue button */}
           <button 
+            onClick={() => onAddIssue?.(status)}
             className="p-1 text-gray-400 hover:text-gray-600 hover:bg-white/50 rounded transition-colors"
             title={`Add issue to ${label}`}
           >

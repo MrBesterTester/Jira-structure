@@ -15,11 +15,11 @@
 | 2 | State Management & Basic UI Shell | Complete | 3/3 |
 | 3 | Tree View Implementation | Complete | 3/3 |
 | 4 | Kanban Board Implementation | Complete | 3/3 |
-| 5 | Issue Management & Search | In Progress | 2/4 |
+| 5 | Issue Management & Search | In Progress | 3/4 |
 | 6 | Bulk Operations, Import/Export & Polish | Not Started | 0/4 |
 | 7 | MCP Integration (Atlassian-Compatible) | Not Started | 0/3 |
 
-**Total Progress: 15/24 steps completed**
+**Total Progress: 16/24 steps completed**
 
 ---
 
@@ -179,13 +179,13 @@
 - [x] **TEST**: Can view and manage all relationship types
 
 ### Step 5.3: Implement Create Issue Flow
-- [ ] Create CreateIssueModal.tsx
-- [ ] Add quick create from sidebar
-- [ ] Add quick create from tree (sibling/child)
-- [ ] Add quick create from Kanban column
-- [ ] Implement createIssue action with key generation
-- [ ] Auto-select and highlight new issue
-- [ ] **TEST**: Can create issues at any level, validation works
+- [x] Create CreateIssueModal.tsx
+- [x] Add quick create from sidebar
+- [x] Add quick create from tree (sibling/child)
+- [x] Add quick create from Kanban column
+- [x] Implement createIssue action with key generation
+- [x] Auto-select and highlight new issue
+- [x] **TEST**: Can create issues at any level, validation works
 
 ### Step 5.4: Implement JQL-like Search
 - [ ] Create jqlParser.ts (query to AST)

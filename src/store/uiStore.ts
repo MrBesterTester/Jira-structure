@@ -39,6 +39,7 @@ interface UIState {
   // Modals
   createIssueModalOpen: boolean;
   createIssueParentId: string | null;
+  createIssueDefaultStatus: string | null;
   
   // Search
   searchQuery: string;
@@ -80,7 +81,7 @@ interface UIState {
   setSortConfig: (config: SortConfig | null) => void;
   
   // Actions - Modals
-  openCreateIssueModal: (parentId?: string | null) => void;
+  openCreateIssueModal: (parentId?: string | null, defaultStatus?: string | null) => void;
   closeCreateIssueModal: () => void;
   
   // Actions - Search
@@ -119,6 +120,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   // Initial state - Modals
   createIssueModalOpen: false,
   createIssueParentId: null,
+  createIssueDefaultStatus: null,
   
   // Initial state - Search
   searchQuery: '',
@@ -291,10 +293,11 @@ export const useUIStore = create<UIState>((set, get) => ({
   // MODAL ACTIONS
   // ============================================================================
 
-  openCreateIssueModal: (parentId = null) => {
+  openCreateIssueModal: (parentId = null, defaultStatus = null) => {
     set({ 
       createIssueModalOpen: true, 
       createIssueParentId: parentId ?? null,
+      createIssueDefaultStatus: defaultStatus ?? null,
     });
   },
 
@@ -302,6 +305,7 @@ export const useUIStore = create<UIState>((set, get) => ({
     set({ 
       createIssueModalOpen: false, 
       createIssueParentId: null,
+      createIssueDefaultStatus: null,
     });
   },
 

@@ -310,6 +310,7 @@ export function KanbanBoard({ className = '' }: KanbanBoardProps) {
   const filters = useUIStore(state => state.filters);
   const openDetailPanel = useUIStore(state => state.openDetailPanel);
   const toggleIssueSelection = useUIStore(state => state.toggleIssueSelection);
+  const openCreateIssueModal = useUIStore(state => state.openCreateIssueModal);
   const users = useUserStore(state => state.users);
 
   // Drag-and-drop state
@@ -537,6 +538,11 @@ export function KanbanBoard({ className = '' }: KanbanBoardProps) {
     openDetailPanel(issue.id);
   };
 
+  // Handle add issue from column
+  const handleAddIssue = useCallback((status: IssueStatus) => {
+    openCreateIssueModal(null, status);
+  }, [openCreateIssueModal]);
+
   // Loading state
   if (loading) {
     return (
@@ -599,6 +605,7 @@ export function KanbanBoard({ className = '' }: KanbanBoardProps) {
                   dragOverSwimlaneId={dragOverSwimlaneId}
                   onIssueClick={handleIssueClick}
                   onIssueDoubleClick={handleIssueDoubleClick}
+                  onAddIssue={handleAddIssue}
                 />
               ))}
             </div>
@@ -631,6 +638,7 @@ export function KanbanBoard({ className = '' }: KanbanBoardProps) {
                   isDropTarget={isDropTarget}
                   onIssueClick={handleIssueClick}
                   onIssueDoubleClick={handleIssueDoubleClick}
+                  onAddIssue={handleAddIssue}
                 />
               );
             })}

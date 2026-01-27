@@ -11,7 +11,7 @@ import { useUIStore } from '../../store';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { MainContent } from './MainContent';
-import { IssueDetailPanel } from '../Issue';
+import { IssueDetailPanel, CreateIssueModal } from '../Issue';
 
 interface AppShellProps {
   children?: ReactNode;
@@ -42,6 +42,9 @@ export function AppShell({ children }: AppShellProps) {
 
       {/* Issue Detail Panel (slides in from right) */}
       <IssueDetailPanel />
+
+      {/* Create Issue Modal */}
+      <CreateIssueModal />
     </div>
   );
 }
