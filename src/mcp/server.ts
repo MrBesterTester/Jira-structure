@@ -15,7 +15,7 @@ import {
   ListToolsRequestSchema,
   Tool,
 } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
+// zod is available if needed for additional validation
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
@@ -159,9 +159,10 @@ function getUsers(): User[] {
   return readJsonFile<User[]>('users.json');
 }
 
-function getSprints(): Sprint[] {
-  return readJsonFile<Sprint[]>('sprints.json');
-}
+// getSprints can be used for sprint-related queries
+// function getSprints(): Sprint[] {
+//   return readJsonFile<Sprint[]>('sprints.json');
+// }
 
 function getIssueByKey(issueIdOrKey: string): Issue | undefined {
   const issues = getIssues();
@@ -197,16 +198,6 @@ function parseSimpleJQL(jql: string): JQLCondition[] {
   
   // Simple regex-based parser for common JQL patterns
   // Handles: field = "value", field != value, field IN (v1, v2)
-  const patterns = [
-    // IN operator
-    /(\w+)\s+IN\s*\(([^)]+)\)/gi,
-    // NOT IN operator
-    /(\w+)\s+NOT\s+IN\s*\(([^)]+)\)/gi,
-    // Comparison operators
-    /(\w+)\s*(=|!=|>=|<=|>|<|~)\s*"([^"]+)"/gi,
-    /(\w+)\s*(=|!=|>=|<=|>|<|~)\s*'([^']+)'/gi,
-    /(\w+)\s*(=|!=|>=|<=|>|<|~)\s*(\S+)/gi,
-  ];
   
   let remaining = jql;
   
