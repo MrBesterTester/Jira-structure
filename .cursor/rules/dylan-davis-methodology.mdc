@@ -214,6 +214,17 @@ After fixing error, say: "We just figured out how to fix this issue. I need you 
 6. **Keep It Simple**: Start with MVP, add features later if needed
 7. **Embed Lessons**: Every error fixed should prevent future instances
 
+---
+
+## Project-Specific Lessons Learned
+
+> Lessons from this project. Keep brief and information-dense.
+
+### UI Component Testing (2026-01-27)
+**Problem**: Created IssueDetailPanel that crashed the app on open. Declared it "done" after linter passed.
+**Root Cause**: Linter (ESLint) doesn't catch TypeScript type errors. Code had obvious type mismatch (`getAllIssueTypes()` returns `{type, label}` objects but code treated them as enum values).
+**Lesson**: For UI components, **always test in browser** before marking complete. "Linter passes" ≠ "works". Use browser-use subagent or manual testing to verify interactive features actually function. TypeScript errors require running `tsc --noEmit`, not just ESLint.
+
 ## When Starting New Conversations
 
 **Always include these documents**:

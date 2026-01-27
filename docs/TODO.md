@@ -15,11 +15,11 @@
 | 2 | State Management & Basic UI Shell | Complete | 3/3 |
 | 3 | Tree View Implementation | Complete | 3/3 |
 | 4 | Kanban Board Implementation | Complete | 3/3 |
-| 5 | Issue Management & Search | Not Started | 0/4 |
+| 5 | Issue Management & Search | In Progress | 1/4 |
 | 6 | Bulk Operations, Import/Export & Polish | Not Started | 0/4 |
 | 7 | MCP Integration (Atlassian-Compatible) | Not Started | 0/3 |
 
-**Total Progress: 13/24 steps completed**
+**Total Progress: 14/24 steps completed**
 
 ---
 
@@ -160,14 +160,14 @@
 ## Phase 5: Issue Management & Search
 
 ### Step 5.1: Create Issue Detail Panel
-- [ ] Create IssueDetailPanel.tsx (slide-out panel)
-- [ ] Create IssueDetailsTab.tsx with all fields
-- [ ] Implement inline editing for title
-- [ ] Add markdown editor for description
-- [ ] Create field grid with all standard fields
-- [ ] Implement auto-save on blur/change
-- [ ] Add delete issue with confirmation
-- [ ] **TEST**: Can view and edit all fields, changes persist
+- [x] Create IssueDetailPanel.tsx (slide-out panel)
+- [x] Create IssueDetailsTab.tsx with all fields
+- [x] Implement inline editing for title
+- [x] Add markdown editor for description
+- [x] Create field grid with all standard fields
+- [x] Implement auto-save on blur/change
+- [x] Add delete issue with confirmation
+- [x] **TEST**: Can view and edit all fields, changes persist
 
 ### Step 5.2: Create Issue Relationships Tab
 - [ ] Create IssueRelationshipsTab.tsx
@@ -310,6 +310,12 @@
 **Prevention**: [How to avoid in future]
 ```
 
+### Lesson 1: UI Component Testing (Step 5.1)
+**Issue**: IssueDetailPanel crashed the entire app when opened. AI declared step "complete" after linter passed.
+**Cause**: ESLint doesn't catch TypeScript type errors. Code passed `{type, label}` objects to a function expecting `IssueType` enum. TypeScript would have caught this but `tsc` wasn't run.
+**Solution**: Fixed the type mismatch by properly destructuring objects from `getAllIssueTypes()`.
+**Prevention**: For UI components, ALWAYS test in browser before marking complete. Use browser-use subagent or manual testing. Run `tsc --noEmit` to catch type errors, not just ESLint.
+
 ---
 
 ## Document History
@@ -318,3 +324,4 @@
 |---------|------|--------|---------|
 | 1.0 | 2026-01-26 | Claude (Opus 4.5) | Initial to-dos from blueprint |
 | 1.1 | 2026-01-27 | Claude (Opus 4.5) | Updated Phase 7 for Atlassian MCP compatibility (3 steps) |
+| 1.2 | 2026-01-27 | Claude (Opus 4.5) | Completed Step 5.1, added Lesson 1 (UI testing) |

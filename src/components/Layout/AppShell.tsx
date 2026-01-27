@@ -3,6 +3,7 @@
  * 
  * Provides the overall structure with sidebar and main content area.
  * Handles responsive sidebar collapse behavior.
+ * Includes the issue detail panel overlay.
  */
 
 import { ReactNode } from 'react';
@@ -10,6 +11,7 @@ import { useUIStore } from '../../store';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { MainContent } from './MainContent';
+import { IssueDetailPanel } from '../Issue';
 
 interface AppShellProps {
   children?: ReactNode;
@@ -37,6 +39,9 @@ export function AppShell({ children }: AppShellProps) {
           {children}
         </MainContent>
       </div>
+
+      {/* Issue Detail Panel (slides in from right) */}
+      <IssueDetailPanel />
     </div>
   );
 }

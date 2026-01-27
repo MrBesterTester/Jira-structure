@@ -28,3 +28,7 @@ export {
   getPriorityConfig, 
   getAllPriorities 
 } from './PriorityIndicator';
+
+// Issue detail panel (slide-out)
+export { IssueDetailPanel } from './IssueDetailPanel';
+export { IssueDetailsTab } from './IssueDetailsTab';
