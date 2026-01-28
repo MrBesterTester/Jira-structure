@@ -55,7 +55,7 @@ This application simulates Atlassian Jira with the Structure plugin, purpose-bui
 
 ### Prerequisites
 
-- **Node.js 18+** — [Download here](https://nodejs.org/)
+- **Node.js 18 or higher** (tested on 18, 20, and 22) — [Download here](https://nodejs.org/)
 - **Claude Desktop** — Required for Claude Cowork integration (or Cursor IDE)
 
 ### Installation
@@ -86,7 +86,7 @@ To share this tool with a friend:
 1. **Create the package**: Run `npm run package` (creates `jira-structure.zip`)
 2. **Send the zip file** via email, Dropbox, USB drive, etc.
 3. **Recipient instructions**:
-   - Install [Node.js 18+](https://nodejs.org/) if not already installed
+   - Install [Node.js 18 or higher](https://nodejs.org/) if not already installed
    - Unzip the file
    - Double-click the start script
    - That's it!
@@ -352,7 +352,7 @@ You can:
 
 ## Cross-Platform Compatibility
 
-This application runs on **any operating system** that supports Node.js 18+. The entire stack is pure JavaScript/TypeScript with no native compiled code or architecture-specific dependencies.
+This application runs on **any operating system** that supports Node.js 18 or higher (tested on 18, 20, and 22). The entire stack is pure JavaScript/TypeScript with no native compiled code or architecture-specific dependencies.
 
 ### Supported Platforms
 
@@ -396,7 +396,7 @@ For full details, see [Incomplete Tests](docs/Step-6-4_UI-Testing-Plan.md#incomp
 
 ### App won't start
 
-1. Ensure Node.js 18+ is installed: `node --version`
+1. Ensure Node.js 18 or higher is installed: `node --version`
 2. Delete `node_modules` and run `npm install` again
 3. Check if port 3000 is already in use
 
