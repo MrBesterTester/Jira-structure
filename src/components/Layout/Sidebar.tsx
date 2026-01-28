@@ -56,27 +56,43 @@ export function Sidebar() {
       }`}
     >
       {/* Header with toggle */}
-      <div className="h-14 flex items-center justify-between px-4 border-b border-gray-200">
-        {!sidebarCollapsed && (
-          <span className="font-semibold text-gray-800 text-sm truncate">
-            Jira Structure
-          </span>
-        )}
-        <button
-          onClick={toggleSidebar}
-          className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
-          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {sidebarCollapsed ? (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-            </svg>
-          ) : (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-            </svg>
+      <div className="border-b border-gray-200">
+        <div className="h-14 flex items-center justify-between px-4">
+          {!sidebarCollapsed && (
+            <span className="font-semibold text-gray-800 text-sm truncate">
+              Learning Jira Structure
+            </span>
           )}
-        </button>
+          <button
+            onClick={toggleSidebar}
+            className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {sidebarCollapsed ? (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+              </svg>
+            )}
+          </button>
+        </div>
+        {!sidebarCollapsed && (
+          <div className="px-4 pb-2 flex items-center gap-2 text-xs text-gray-500">
+            <span>{__BUILD_DATE__}</span>
+            <span>•</span>
+            <a 
+              href="https://github.com/MrBesterTester/Jira-structure.git" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              GitHub repo
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Project Selector */}

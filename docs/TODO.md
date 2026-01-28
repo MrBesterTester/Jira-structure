@@ -319,13 +319,55 @@
 
 ### Step 8.2: Create Release Package
 - [ ] Run `npm run package` to create jira-structure.zip
-- [ ] Verify zip contents include dist/, dist-server/, data/, START-HERE scripts
+- [ ] Verify zip contents include dist/, dist-server/, data/, START-HERE scripts:
+  ```bash
+  unzip -l jira-structure.zip
+  ```
 - [ ] Test zip on fresh machine (or fresh folder):
-  - [ ] Unzip
-  - [ ] Double-click START-HERE
-  - [ ] Web app works
-  - [ ] MCP server path is correct
-- [ ] Create GitHub Release with zip attached
+  ```bash
+  # From project root
+  rm -rf ../jira-structure-pkg-test && mkdir ../jira-structure-pkg-test
+  cp jira-structure.zip ../jira-structure-pkg-test/
+  cd ../jira-structure-pkg-test
+  unzip jira-structure.zip
+  ./START-HERE.command   # Mac (or START-HERE.bat on Windows)
+  ```
+  - [ ] Unzip extracts successfully
+  - [ ] Double-click START-HERE opens browser
+  - [ ] Web app works (create/edit issues, tree view, kanban)
+  - [ ] MCP server path is correct in docs/MCP-SETUP.md
+- [ ] Create git tag for the release:
+  ```bash
+  git tag -a v1.0.0 -m "Initial release"
+  git push origin v1.0.0
+  ```
+- [ ] Create GitHub Release with zip attached:
+  ```bash
+  gh release create v1.0.0 \
+    --title "Jira Structure Learning Tool v1.0.0" \
+    --notes "$(cat <<'EOF'
+  Initial release of the Jira Structure Learning Tool.
+
+  ## Features
+  - Tree view with drag-and-drop hierarchy management
+  - Kanban board with status transitions
+  - JQL-like search
+  - Bulk operations
+  - Import/Export (JSON & CSV)
+  - MCP server for Claude Desktop integration
+
+  ## Getting Started
+  1. Download jira-structure.zip below
+  2. Unzip to any folder
+  3. Double-click START-HERE.command (Mac) or START-HERE.bat (Windows)
+  4. Browser opens automatically
+
+  Requires Node.js 18+.
+  EOF
+  )" \
+    jira-structure.zip
+  ```
+- [ ] Verify release page: https://github.com/MrBesterTester/jira-structure/releases/tag/v1.0.0
 - [ ] Share download link with friend
 - [ ] **TEST**: Friend can download, unzip, and run successfully
 
