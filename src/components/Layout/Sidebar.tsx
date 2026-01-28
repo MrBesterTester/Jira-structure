@@ -84,7 +84,7 @@ export function Sidebar() {
             <span>{__BUILD_DATE__}</span>
             <span>•</span>
             <a 
-              href="https://github.com/MrBesterTester/Jira-structure.git" 
+              href="https://github.com/MrBesterTester/Jira-structure" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-800 hover:underline"
