@@ -392,6 +392,19 @@
 **Solution**: Fixed the type mismatch by properly destructuring objects from `getAllIssueTypes()`.
 **Prevention**: For UI components, ALWAYS test in browser before marking complete. Use browser-use subagent or manual testing. Run `tsc --noEmit` to catch type errors, not just ESLint.
 
+### Lesson 2: Release Package vs Tag Mismatch (Step 8.2)
+**Issue**: GitHub release tag pointed to the latest commit, but the attached zip file was built from older code. Documentation fixes made after `npm run package` were not included in the downloadable release.
+**Cause**: The release workflow was done out of order: (1) built package, (2) made more commits, (3) pushed tag, (4) created release with old zip. The tag moved to the new commit but the zip was stale.
+**Solution**: Rebuilt the package with `npm run package`, deleted the old release, and recreated it with the fresh zip.
+**Prevention**: Always follow this exact order for releases:
+1. Make ALL code changes and commit them
+2. Push commits to GitHub (`git push origin main`)
+3. Run `npm run package` to build the zip (AFTER all commits)
+4. Create and push the tag (`git tag -a ... && git push origin <tag>`)
+5. Create the GitHub release with the freshly-built zip
+
+Never create/push a tag or build a package until all code changes are finalized and pushed.
+
 ---
 
 ## Document History
