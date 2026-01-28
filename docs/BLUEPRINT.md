@@ -963,6 +963,67 @@ Create test suite for MCP Atlassian compatibility:
 
 ---
 
+## Phase 8: Release
+
+**Goal**: Publish to GitHub with security scanning and create distributable package.
+
+### Step 8.1: Prepare for GitHub Publishing
+
+**Test**: Repository is public and accessible.
+
+```
+PROMPT:
+Prepare the project for GitHub publishing:
+
+1. Add jira-structure.zip to .gitignore
+2. Create LICENSE file (MIT)
+3. Review README.md for sensitive paths
+4. Create GitHub repository
+5. Push code to GitHub
+```
+
+### Step 8.2: Enable GitHub Security Scanning
+
+**Test**: Dependabot and CodeQL workflows appear in GitHub Actions, Security tab shows scanning enabled.
+
+```
+PROMPT:
+Enable GitHub security scanning with Dependabot and CodeQL:
+
+1. Create .github/dependabot.yml:
+   - Enable npm dependency updates (weekly)
+   - Enable GitHub Actions updates (weekly)
+   - Limit open PRs to 10
+
+2. Create .github/workflows/codeql.yml:
+   - Scan JavaScript/TypeScript code
+   - Run on push to main and PRs
+   - Run weekly scheduled scan
+   - Use default CodeQL query suite
+
+3. Commit and push both files
+4. Verify workflows run successfully in GitHub Actions
+5. Check GitHub Security tab shows Dependabot and code scanning enabled
+```
+
+### Step 8.3: Create Release Package
+
+**Test**: App builds, packages, and runs from zip with minimal setup.
+
+```
+PROMPT:
+Create the distributable release package:
+
+1. Run npm run package to create jira-structure.zip
+2. Verify zip contents include all necessary files
+3. Test zip in fresh folder (unzip, double-click START-HERE)
+4. Create git tag v1.0.0
+5. Create GitHub Release with zip attached
+6. Verify release page and share download link
+```
+
+---
+
 ## Appendix: File Structure
 
 ```
@@ -1010,3 +1071,4 @@ jira-structure-app/
 |---------|------|--------|---------|
 | 1.0 | 2026-01-26 | Claude (Opus 4.5) | Initial blueprint from specification |
 | 1.1 | 2026-01-27 | Claude (Opus 4.5) | Updated Phase 7 for Atlassian MCP Server compatibility |
+| 1.2 | 2026-01-28 | Claude (Opus 4.5) | Added Phase 8: Release with security scanning (3 steps) |

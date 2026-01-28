@@ -204,6 +204,17 @@ The final deliverable should include:
 4. Simple start script (`npm start` or `./start.sh`)
 5. README with setup instructions
 
+### 3.6 Code Quality & Security
+
+GitHub repository security features (free for public repositories):
+
+| Feature | Purpose | Configuration |
+|---------|---------|---------------|
+| **Dependabot** | Scans dependencies for known vulnerabilities, creates PRs for updates | `.github/dependabot.yml` |
+| **CodeQL** | Static code analysis for security vulnerabilities in JavaScript/TypeScript | `.github/workflows/codeql.yml` |
+
+Both features run automatically on push/PR and provide alerts in the GitHub Security tab.
+
 ---
 
 ## 4. MCP Integration (Future Phase)
@@ -370,3 +381,4 @@ The project is successful when:
 |---------|------|--------|---------|
 | 1.0 | 2026-01-26 | Sam (via Claude) | Initial specification from interview |
 | 1.1 | 2026-01-27 | Claude (Opus 4.5) | Updated Section 4 for Atlassian MCP Server compatibility |
+| 1.2 | 2026-01-28 | Claude (Opus 4.5) | Added Section 3.6 Code Quality & Security (Dependabot, CodeQL) |

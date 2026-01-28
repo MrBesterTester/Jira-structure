@@ -18,9 +18,9 @@
 | 5 | Issue Management & Search | Complete | 4/4 |
 | 6 | Bulk Operations, Import/Export & Polish | Complete | 4/4 |
 | 7 | MCP Integration (Atlassian-Compatible) | Complete | 3/3 |
-| 8 | Release | In Progress | 1/2 |
+| 8 | Release | In Progress | 2/3 |
 
-**Total Progress: 24/26 steps completed**
+**Total Progress: 25/27 steps completed**
 
 ---
 
@@ -317,7 +317,19 @@
   ```
 - [x] **TEST**: Repository is public and accessible at https://github.com/MrBesterTester/Jira-structure
 
-### Step 8.2: Create Release Package
+### Step 8.2: Enable GitHub Security Scanning
+- [x] Create `.github/dependabot.yml`:
+  - [x] Enable npm dependency updates (weekly schedule)
+  - [x] Enable GitHub Actions updates (weekly schedule)
+  - [x] Set open-pull-requests-limit to 10
+- [x] Create `.github/workflows/codeql.yml`:
+  - [x] Scan JavaScript/TypeScript code
+  - [x] Run on push to main and PRs
+  - [x] Run weekly scheduled scan (Monday 6am UTC)
+- [x] Commit and push both files
+- [x] **TEST**: Dependabot alerts appear in GitHub Security tab
+- [x] **TEST**: CodeQL workflow runs successfully in GitHub Actions
+
 - [ ] Run `npm run package` to create jira-structure.zip
 - [ ] Verify zip contents include dist/, dist-server/, data/, START-HERE scripts:
   ```bash
@@ -362,7 +374,7 @@
   3. Double-click START-HERE.command (Mac) or START-HERE.bat (Windows)
   4. Browser opens automatically
 
-  Requires Node.js 18+.
+  Requires Node.js 18 or higher.
   EOF
   )" \
     jira-structure.zip
@@ -401,3 +413,4 @@
 | 1.1 | 2026-01-27 | Claude (Opus 4.5) | Updated Phase 7 for Atlassian MCP compatibility (3 steps) |
 | 1.2 | 2026-01-27 | Claude (Opus 4.5) | Completed Step 5.1, added Lesson 1 (UI testing) |
 | 1.3 | 2026-01-27 | Claude (Opus 4.5) | Completed Step 7.2, added Phase 8: Release (2 steps) |
+| 1.4 | 2026-01-28 | Claude (Opus 4.5) | Added Step 8.2 GitHub Security Scanning, renumbered to 3 steps |
