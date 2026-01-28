@@ -351,7 +351,7 @@
 - [ ] Create git tag for the release:
   > **Note**: Tag uses format `rel_YYYY-MM-DD_HH:MM` in PST. The actual build time on GitHub will be a few minutes later—close enough given the expected release frequency.
   ```bash
-  git tag -a rel_2026-01-28_11:50 -m "Initial release"
+  git tag -a rel_2026-01-28_11:50 -m "Release 2026-01-28_11:50"
   git push origin rel_2026-01-28_11:50
   ```
 - [ ] Create GitHub Release with zip attached:
