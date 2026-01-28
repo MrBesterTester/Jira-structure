@@ -280,7 +280,7 @@ export const IssueRelationshipsTab = memo(function IssueRelationshipsTab({
     const baseExclude = [issue.id];
     
     switch (pickerMode) {
-      case 'parent':
+      case 'parent': {
         // Exclude current issue, its descendants (to prevent circular refs)
         const getDescendants = (id: string): string[] => {
           const iss = getIssueById(id);
@@ -291,8 +291,9 @@ export const IssueRelationshipsTab = memo(function IssueRelationshipsTab({
           excludeIds: getDescendants(issue.id),
           title: 'Select Parent Issue',
         };
+      }
       
-      case 'child':
+      case 'child': {
         // Exclude current issue, its ancestors (to prevent circular refs), and current children
         const getAncestors = (id: string | null): string[] => {
           if (!id) return [];
@@ -304,6 +305,7 @@ export const IssueRelationshipsTab = memo(function IssueRelationshipsTab({
           excludeIds: [...baseExclude, ...getAncestors(issue.parentId), ...issue.childIds],
           title: 'Select Child Issue',
         };
+      }
       
       case 'blocker':
         return {

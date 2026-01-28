@@ -5,7 +5,7 @@
  * and view toggle buttons (Tree/Kanban).
  */
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import { useUIStore, useProjectStore } from '../../store';
 import type { ViewType } from '../../types';
 import { SearchBar, saveRecentSearch } from '../Search/SearchBar';
@@ -73,6 +73,7 @@ export function Header() {
   }, [clearSearch]);
   
   // Handle selecting an issue from results
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSelectIssue = useCallback((issueId: string) => {
     // Keep search open so user can continue exploring results
     // The detail panel will open via the SearchResults component

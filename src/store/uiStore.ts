@@ -100,7 +100,7 @@ interface UIState {
 // STORE IMPLEMENTATION
 // ============================================================================
 
-export const useUIStore = create<UIState>((set, get) => ({
+export const useUIStore = create<UIState>((set) => ({
   // Initial state - View
   currentView: 'tree',
   sidebarCollapsed: false,

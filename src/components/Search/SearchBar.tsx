@@ -9,7 +9,7 @@
  */
 
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { parseJQL, getJQLFieldNames, getJQLOperators, getJQLBooleanOperators, Token, TokenType } from '../../utils/jqlParser';
+import { parseJQL, getJQLFieldNames, getJQLOperators, getJQLBooleanOperators, TokenType } from '../../utils/jqlParser';
 import { getFieldValues, getEnumValues } from '../../utils/jqlEvaluator';
 import { useIssueStore } from '../../store';
 import type { Issue } from '../../types';
@@ -127,7 +127,7 @@ function getAutocompleteContext(query: string, cursorPosition: number): {
       case TokenType.CONTAINS:
       case TokenType.IN:
       case TokenType.NOT_IN:
-      case TokenType.COMMA:
+      case TokenType.COMMA: {
         // Need a value - find the field name
         const fieldToken = nonEofTokens.findLast(t => t.type === TokenType.IDENTIFIER);
         return { 
@@ -136,6 +136,7 @@ function getAutocompleteContext(query: string, cursorPosition: number): {
           fieldContext: fieldToken?.value,
           startPosition,
         };
+      }
         
       case TokenType.STRING:
       case TokenType.NUMBER:
@@ -298,7 +299,7 @@ export function SearchBar({ value, onChange, onSearch, placeholder, className }:
   }, []);
   
   // Handle blur
-  const handleBlur = useCallback((e: React.FocusEvent) => {
+  const handleBlur = useCallback(() => {
     // Delay to allow click on suggestion
     setTimeout(() => {
       if (!suggestionsRef.current?.contains(document.activeElement)) {

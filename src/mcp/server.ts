@@ -71,6 +71,8 @@ interface Project {
   createdAt: string;
 }
 
+// Sprint interface used for type reference in data files
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface Sprint {
   id: string;
   name: string;

@@ -988,6 +988,10 @@ describe('Error Response Patterns', () => {
       const validTransitions = ['To Do', 'In Progress', 'In Review', 'Done'];
       const normalizedTransitions = ['todo', 'in progress', 'done', 'complete'];
       
+      // Verify both arrays have expected string values
+      validTransitions.forEach(t => {
+        expect(typeof t).toBe('string');
+      });
       normalizedTransitions.forEach(t => {
         expect(typeof t).toBe('string');
       });

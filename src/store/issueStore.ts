@@ -342,7 +342,7 @@ export const useIssueStore = create<IssueState>((set, get) => ({
       }
     }
 
-    let updatedIssues = state.issues.map(issue => {
+    const updatedIssues = state.issues.map(issue => {
       // Update the moved issue's parentId
       if (issue.id === issueId) {
         return { ...issue, parentId: newParentId, updatedAt: now };

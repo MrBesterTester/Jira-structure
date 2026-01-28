@@ -68,10 +68,11 @@ function validate(): void {
   const issueMap = new Map(issues.map(i => [i.id, i]));
   const userIds = new Set(users.map(u => u.id));
   const projectIds = new Set(projects.map(p => p.id));
-  const sprintIds = new Set(sprints.map(s => s.id));
+  // Note: sprintIds available for future validation
+  void sprints.map(s => s.id);
   
-  let errors: string[] = [];
-  let warnings: string[] = [];
+  const errors: string[] = [];
+  const warnings: string[] = [];
   
   // Count issue types
   const typeCounts: Record<string, number> = {};

@@ -24,8 +24,8 @@ import {
   Issue 
 } from '../../types';
 import { IssueTypeIcon, getAllIssueTypes } from './IssueTypeIcon';
-import { StatusBadge, getAllStatuses } from './StatusBadge';
-import { PriorityIndicator, getAllPriorities } from './PriorityIndicator';
+import { getAllStatuses } from './StatusBadge';
+import { getAllPriorities } from './PriorityIndicator';
 
 // ============================================================================
 // TYPES
@@ -85,7 +85,6 @@ export function CreateIssueModal() {
   const currentProject = getCurrentProject();
   
   const sprints = useSprintStore(state => state.sprints);
-  const getActiveSprint = useSprintStore(state => state.getActiveSprint);
   
   const users = useUserStore(state => state.users);
 

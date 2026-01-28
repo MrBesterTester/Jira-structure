@@ -17,7 +17,6 @@ import type {
   UnaryExpression,
   ComparisonExpression,
   InExpression,
-  Literal,
 } from './jqlParser';
 
 // ============================================================================

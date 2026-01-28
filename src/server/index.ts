@@ -264,7 +264,8 @@ if (fs.existsSync(DIST_DIR)) {
 // ============================================================================
 
 // Global error handler
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
   console.error('Server error:', err);
   res.status(500).json({
     success: false,

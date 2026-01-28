@@ -400,7 +400,7 @@ export function mergeData(
             merged.issues[existingIndex] = importedIssue;
             stats.issuesOverwritten++;
             break;
-          case 'create_new':
+          case 'create_new': {
             // Generate new ID and key
             const newIssue = {
               ...importedIssue,
@@ -410,6 +410,7 @@ export function mergeData(
             merged.issues.push(newIssue);
             stats.issuesImported++;
             break;
+          }
         }
       } else {
         // No conflict, just add
