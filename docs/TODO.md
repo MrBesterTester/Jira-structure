@@ -349,14 +349,15 @@
   - [ ] Web app works (create/edit issues, tree view, kanban)
   - [ ] MCP server path is correct in docs/MCP-SETUP.md
 - [ ] Create git tag for the release:
+  > **Note**: Tag uses format `rel_YYYY-MM-DD_HH:MM` in PST. The actual build time on GitHub will be a few minutes later—close enough given the expected release frequency.
   ```bash
-  git tag -a v1.0.0 -m "Initial release"
-  git push origin v1.0.0
+  git tag -a rel_2026-01-28_11:50 -m "Initial release"
+  git push origin rel_2026-01-28_11:50
   ```
 - [ ] Create GitHub Release with zip attached:
   ```bash
-  gh release create v1.0.0 \
-    --title "Jira Structure Learning Tool v1.0.0" \
+  gh release create rel_2026-01-28_11:50 \
+    --title "Jira Structure Learning Tool - Initial Release (2026-01-28)" \
     --notes "$(cat <<'EOF'
   Initial release of the Jira Structure Learning Tool.
 
@@ -379,7 +380,7 @@
   )" \
     jira-structure.zip
   ```
-- [ ] Verify release page: https://github.com/MrBesterTester/jira-structure/releases/tag/v1.0.0
+- [ ] Verify release page: https://github.com/MrBesterTester/jira-structure/releases/tag/rel_2026-01-28_11:50
 - [ ] Share download link with friend
 - [ ] **TEST**: Friend can download, unzip, and run successfully
 
